@@ -203,7 +203,7 @@ class result_type_selector(class_bouton) :
 class class_bouton_calcul(classtextinput) :
     def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None) :
         super().__init__(text, color, x, y, focused, action)
-        self.resultat = ""
+        self.resultat = None
         self.type_resultat = "%"  # Ca pourrait etre : "IFT[%]" ou "NFT[%]"
         
     def draw(self) :
@@ -212,7 +212,7 @@ class class_bouton_calcul(classtextinput) :
         self.text = self.type_resultat.replace("%",text)
         print(self.text)
         super().draw()
-        result_affiche = self.type_resultat.replace("%",str(self.resultat))
+        result_affiche = str(self.resultat) if self.resultat != None else ""
         self.text = text
         draw_string(result_affiche, self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
     
@@ -283,6 +283,8 @@ class class_bouton_calcul(classtextinput) :
         """
         Le parseur
         """
+        if chaine == "" :
+            return None
         chaine_check = chaine.replace(" ", "").replace(",", "").replace("." , "")
         if chaine_check.isnumeric(): # Que des nombres
             return parseIFT(chaine)

@@ -54,7 +54,7 @@ class Intervalle_net_continu():
 
 class Intervalle_net():
     def __init__(self, *args): # Attention pas sur que ca marche le *args
-        if len(args % 2 != 0):
+        if len(args) % 2 != 0:
             #return Erreur("The number of arguments must be even")
             pass
         self.intervalles_continus = []
@@ -73,6 +73,9 @@ class Intervalle_net():
                     self.intervalles_continus[i] = self.intervalles_continus[i] + self.intervalles_continus[j]
                     del self.intervalles_continus[j]
                     break
+    
+    def __str__(self) -> str:
+        return str(self.intervalles_continus)
     
 
 class Trapèseflou():
