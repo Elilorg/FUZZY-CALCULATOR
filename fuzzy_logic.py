@@ -3,6 +3,7 @@ import random
 
 class Erreur():
     def __init__(self, message) :
+        print("Erreur log : " + message)
         self.message = message
     
     def __str__(self) -> str:
@@ -234,13 +235,15 @@ def get_value(chaine):
     check_num = chaine.replace(",", "")
     if check_num.isnumeric():
         nb = convert_to_float(chaine)
+        if nb is None : return Erreur(chaine + " convertion to float impossible")
         return Trapèseflou(nb,nb,nb,nb,1)
 
     """
     Remplacer par la value dans le grid
     """
-    dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
-    return dico[chaine]
+    #dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
+    #return dico[chaine]
+    return Erreur(chaine + " n'est pas un nb valide")
 
 
 def calcul(chaine):
@@ -259,15 +262,17 @@ def result_chaine(chaine):
     Le parseur
     """
     chaine_check = chaine.replace(" ", "").replace(",", "").replace("." , "")
-    if chaine_check.isnumeric():
+    if chaine_check.isnumeric(): # Que des nombres
         return parseIFT(chaine)
     else:
-        return calcul(chaine_check)
-    
+        try : 
+            return calcul(chaine)
+        except : 
+            return Erreur("Le calcul a échoué")
 
 if __name__ == "__main__":
     print(result_chaine("a1"))
-    print(result_chaine("a1 - a1"))
+    print(str(result_chaine("12.2.2+3344 45,55 43,233,4")))
 
 
 
