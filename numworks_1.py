@@ -13,7 +13,7 @@ yellow = (255, 255, 0)
 green = (0, 255, 0)
 g = green
 
-
+### BOUTONS
 
 class class_bouton : 
     """
@@ -56,12 +56,19 @@ class class_bouton :
         self.grid = None
     
 
-    def draw(self) : 
+    def draw(self, color = None) :
+
         self.updater_coordonnees()
             #raise ValueError(f"height, width, cordinates not set, button {self.text} at {self.grid_coordinates} must not be in grid yet")
-        color = self.color if not self.focused else self.focused_color
+        if color is not  None :
+            color_used = color
+        elif self.focused  :
+            color_used = self.focused_color
+        else :
+            color_used = self.color
+        print("COLOR USED", color_used)
         left_top = (self.coordinates[0], self.coordinates[1]) 
-        fill_rect(left_top[0], left_top[1], self.width, self.height, color)
+        fill_rect(left_top[0], left_top[1], self.width, self.height, color_used)
         draw_string(self.text, left_top[0], left_top[1], (0, 0, 0))
     
     def updater_coordonnees(self) :
@@ -120,6 +127,15 @@ class classtextinput(class_bouton) :
             KEY_SHIFT : " ",
         }
         self.text_mode = False
+        self.text_mode_color = (255, 255, 255)
+    
+    def draw(self):
+        if self.text_mode : 
+            super().draw(self.text_mode_color)
+        else : 
+            super().draw()
+        
+        super().draw(color)
         
     def add_char(self, char) :
         self.text += char
@@ -166,21 +182,54 @@ class boutonvaleur(class_bouton) :
         super().__init__(text, color, x, y, focused, action)
 
 
+class result_type_selector(class_bouton) :
+    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None, type_resultat = "%") :
+        action = lambda : self.click()
+        super().__init__(text, color, x, y, focused, action)
+        self.type = type_resultat
+    
+    def click(self) :
+        ajouter_type_resultat(self.type)
+        change_grid(main_list)
+
+
 class class_bouton_calcul(classtextinput) :
     def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None) :
         super().__init__(text, color, x, y, focused, action)
         self.resultat = ""
-    
-    def draw(self) : 
+        self.type_resultat = "%"  # Ca pourrait etre : "IFT[%]" ou "NFT[%]"
+        
+    def draw(self) :
+        print("Draw result with type", self.type_resultat)
+        text = self.text
+        self.text = self.type_resultat.replace("%",text)
+        print(self.text)
         super().draw()
-        draw_string(str(self.resultat), self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
+        result_affiche = self.type_resultat.replace("%",str(self.resultat))
+        self.text = text
+        draw_string(result_affiche, self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
     
     def exit_text_mode(self):
         self.resultat = self.text # pour test ici se jouera l'interpretation du calcul
         super().exit_text_mode()
         self.draw()  # Oui, risque de redraw alors qu'on a déja draw parce que texte vide. A voir comment ca se fix
 
+    def del_char(self):
+        if len(self.text) == 0 and self.type_resultat != "%" : 
+            self.type_resultat = "%" # Quand on supprime alors que le texte est vide ca supprime le type de résultat qu'on cherche
+            self.draw()
+        return super().del_char()
     
+    def add_char(self, char):
+        self.text += char
+        self.draw()
+
+    def ajouter_resultat(self, type_resultat) :
+        self.type_resultat = type_resultat
+        self.draw()
+
+
+### INTERFACES ###
 class class_grid:
     """
     La grille contient l'ensemble des boutons. Ici, chaque élément est appellé une "cell".
@@ -448,14 +497,24 @@ class class_liste_principale(class_grid) :
             #print(y, self.y_div -1)
             super().travel_y(i)
 
-
+types = ["INT", "IFT", "NFT"]
 class menu_secondaire(class_grid) : # Le menu secondaire va permettre d'ajouter les types d'intervalles (et quelques fonctions ? Comme T troncature/ elevations, )
     def __init__(self) : 
         super().__init__(x_div=4, y_div=5)
-            
-        
+        for i in range(len(types)) :
+            self.add_button(result_type_selector(types[i], black, [0,1, 2, 3], [i], type_resultat=types[i] + "[%]"))
+
+    def travel_x(self, i):
+        if i == -1 : 
+            change_grid(main_list)
+        return super().travel_x(i)
+
+
+
+      
+
 class class_interface() : 
-    def __init__(self, grid : class_liste_principale, menu = class_grid) : 
+    def __init__(self, grid : class_liste_principale, menu) : 
         self.main_grid = grid
         self.menu = menu
         self.text_mode = False
@@ -485,7 +544,7 @@ class class_interface() :
         ### LE DEBUG FAIT TOUT BEUGUER C NORMAL ###
             if keydown(KEY_PI) :# Touche P sur le clavier 
                 # DEBUG ACTIONS
-                self.grid_focused.go_down()
+                change_grid(self.menu)
                 time.sleep(self.action_rate_constant)
         ### LE DEBUG FAIT TOUT BEUGUER C NORMAL ###
                 
@@ -532,7 +591,20 @@ class class_interface() :
         if self.text_focused_button != None :
             self.text_focused_button.exit_text_mode()
             self.text_focused_button = None
+    
+    def switch_grid(self, grid) : 
+        self.grid_focused = grid
+        self.grid_focused.draw()
+        self.focused_button = self.grid_focused.get_focused_cell()
+        
 
+
+## COMMANDES
+
+def ajouter_type_resultat(type_resultat) : 
+    if interface.text_focused_button == None : 
+        return
+    interface.text_focused_button.ajouter_resultat(type_resultat)
 
 def ajouter_lettre(char) :
     if interface.text_focused_button == None : 
@@ -546,6 +618,11 @@ def activate_text_mode() :
 def deactivate_text_mode() : 
     print("Text mode deactivated")
     interface.exit_text_mode()
-grid = class_liste_principale()
-interface = class_interface(grid, None)
+
+def change_grid(grid) : 
+    interface.switch_grid(grid)
+
+main_list = class_liste_principale()
+menu  = menu_secondaire()
+interface = class_interface(main_list, menu)
 interface.main_loop()
