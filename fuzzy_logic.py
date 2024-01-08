@@ -252,6 +252,8 @@ def calcul(chaine):
         return calcul(chaine.split("+")[0]) + calcul("".join(chaine.split("+")[1:]))
     if "-" in chaine:
         return calcul(chaine.split("-")[0]) - calcul("".join(chaine.split("-")[1:]))
+    if "#" in chaine:
+        return calcul(chaine.split("-")[0]).troncature(convert_to_float(chaine.split("-")[0]))
     return get_value(chaine)
 
 def result_chaine(chaine):
@@ -268,6 +270,7 @@ def result_chaine(chaine):
 if __name__ == "__main__":
     print(result_chaine("a1"))
     print(result_chaine("a1 - a1"))
+    print("#test".split("#"))
 
 
 
