@@ -1,6 +1,7 @@
 from  ion import *
 from kandinsky import *
 import time
+from fuzzy_logic import *
 # Set the screen size
 width_constant = 320
 height_constant = 240
@@ -129,7 +130,7 @@ class classtextinput(class_bouton) :
             KEY_SHIFT : " ",
         }
         self.text_mode = False
-        self.text_mode_color = [255, 255, 255]
+        self.text_mode_color = (230, 230, 230) 
     
     def draw(self):
         if self.text_mode : 
@@ -155,13 +156,13 @@ class classtextinput(class_bouton) :
         if self.text == "CALC" : 
             self.text = ""
             
-            self.draw()
+        self.draw()
     
     def exit_text_mode(self) :
         self.text_mode = False
         if self.text == "" : 
             self.text = "CALC"
-            self.draw()
+        self.draw()
     
     def toggle_text_mode(self) :  
         """
@@ -210,7 +211,7 @@ class class_bouton_calcul(classtextinput) :
         draw_string(result_affiche, self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
     
     def exit_text_mode(self):
-        self.resultat = self.text # pour test ici se jouera l'interpretation du calcul
+        self.resultat = self.grid.get_result_by_id(self.text) # pour test ici se jouera l'interpretation du calcul
         super().exit_text_mode()
         self.draw()  # Oui, risque de redraw alors qu'on a déja draw parce que texte vide. A voir comment ca se fix
 
@@ -408,17 +409,18 @@ class class_grid:
 class class_liste_principale(class_grid) :
 
     def __init__(self) : 
-        self.rows : list[tuple(class_bouton, classtextinput)]= []
-        ids = []
+        self.rows : list[tuple(class_bouton, class_bouton_calcul)]= []
+        ids : list[str] = []
         for j in range(10):
             ids += [i + str(j) if j != 0 else i for i in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
         self.ids = ids
-        
+        self.remaining_ids = ids.copy()        
 
         super().__init__(x_div=4, y_div=5)
         for i in range(self.y_div) :
             self.append_list()
         # Ajouter les rows
+        self.rows[3][1].resultat = "Heelo world"
 
     def move_up(self, cell : class_bouton) : 
         """
@@ -481,7 +483,7 @@ class class_liste_principale(class_grid) :
             print("Plus de lettres")
             return
         bouton_calcul = class_bouton_calcul("CALC", black, [1, 2, 3], [y_pos])
-        bouton_valeur = boutonvaleur(self.ids.pop(0) + " = ", white,[0], [y_pos])
+        bouton_valeur = boutonvaleur(self.remaining_ids.pop(0) + " = ", white,[0], [y_pos])
         self.add_button(bouton_calcul)
         self.add_button(bouton_valeur)
         self.rows.append((bouton_valeur, bouton_calcul))
@@ -500,6 +502,33 @@ class class_liste_principale(class_grid) :
             #print(y, self.y_div -1)
             super().travel_y(i)
 
+
+    def get_result_by_id(self, id) :
+        """
+        Cette fonction fait la supposition que la liste est composée des id suivantes : 
+        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
+        A1, A2, A3, A4 , etc...
+        """
+        if type(id) != str or len(id) == 0 or len(id) > 2:
+            return Erreur("id invalide")
+
+        print(self.ids)
+        index = self.ids.index(id[0]) 
+        if len(id) > 1 :
+            try : 
+                index += 26 * int(id[1]) - 1
+            except :
+                return Erreur("id invalide") 
+            index += 26 * int(id[1])
+        bouton = self.rows[index][1]
+
+        if type(bouton.resultat) == Erreur  : 
+            return Erreur("Le calcul " + id + "à revoyé une erreur")
+        elif bouton.resultat is None : 
+            return Erreur("bouton vide")
+        return bouton.resultat
+    
+
 types = ["INT", "IFT", "NFT"]
 class menu_secondaire(class_grid) : # Le menu secondaire va permettre d'ajouter les types d'intervalles (et quelques fonctions ? Comme T troncature/ elevations, )
     def __init__(self) : 
@@ -512,9 +541,6 @@ class menu_secondaire(class_grid) : # Le menu secondaire va permettre d'ajouter 
             change_grid(main_list)
         return super().travel_x(i)
 
-
-
-      
 
 class class_interface() : 
     def __init__(self, grid : class_liste_principale, menu) : 
@@ -560,13 +586,8 @@ class class_interface() :
         for i in self.actions.keys() : 
                 if keydown(i) : 
                     
-                    result = self.actions[i]()
+                    self.actions[i]()
                     self.focused_button = self.grid_focused.get_focused_cell()
-
-                    if result == "TEXT MODE"  :
-                        print("Text mode in interface") 
-                        self.enter_text_mode()
-
                     time.sleep(self.action_rate_constant)
                     continue
     
@@ -595,12 +616,12 @@ class class_interface() :
             self.text_focused_button.exit_text_mode()
             self.text_focused_button = None
     
+    
     def switch_grid(self, grid) : 
         self.grid_focused = grid
         self.grid_focused.draw()
         self.focused_button = self.grid_focused.get_focused_cell()
         
-
 
 ## COMMANDES
 
@@ -608,6 +629,7 @@ def ajouter_type_resultat(type_resultat) :
     if interface.text_focused_button == None : 
         return
     interface.text_focused_button.ajouter_resultat(type_resultat)
+
 
 def ajouter_lettre(char) :
     if interface.text_focused_button == None : 

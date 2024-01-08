@@ -2,8 +2,11 @@ import math
 import random
 
 class Erreur():
-    def __init__(self, message):
+    def __init__(self, message) :
         self.message = message
+    
+    def __str__(self) -> str:
+        return "ERREUR : " + self.message
 
 
 class Intervalle_net_continu():
@@ -70,8 +73,6 @@ class Intervalle_net():
                     del self.intervalles_continus[j]
                     break
     
-
-
 
 class Trapèseflou():
     def __init__(self, a1, a2, a3, a4, h=1):
@@ -183,3 +184,4 @@ class NFT(Trapèseflou) :
     
     def __str__(self) : 
         return "NFT[" + str(self.a1) + " "+ str(self.a2) + " " + "str(self.a4)"+ "]"
+    
