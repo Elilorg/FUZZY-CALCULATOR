@@ -175,7 +175,7 @@ class Trapèseflou():
             return None  # rien dans l'alpha coupe
 
     def __str__(self) -> str:
-        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ "]"
+        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ " "+ str(self.h)+"]"
 
 
 
@@ -192,6 +192,7 @@ def convert_to_float(nombre):
     """
     conertit un nb en float, sans erreurs
     """
+    print(nombre)
     if "," in nombre or "." in nombre:
         chaine = nombre.replace(",", ".")
         try :  
@@ -241,9 +242,9 @@ def get_value(chaine):
     """
     Remplacer par la value dans le grid
     """
-    #dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
-    #return dico[chaine]
-    return Erreur(chaine + " n'est pas un nb valide")
+    dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
+    return dico[chaine]
+    #return Erreur(chaine + " n'est pas un nb valide")
 
 
 def calcul(chaine):
@@ -255,6 +256,8 @@ def calcul(chaine):
         return calcul(chaine.split("+")[0]) + calcul("".join(chaine.split("+")[1:]))
     if "-" in chaine:
         return calcul(chaine.split("-")[0]) - calcul("".join(chaine.split("-")[1:]))
+    if "#" in chaine:
+        return calcul(chaine.split("#")[0]).troncature(convert_to_float(chaine.split("#")[1]))
     return get_value(chaine)
 
 def result_chaine(chaine):
@@ -266,13 +269,14 @@ def result_chaine(chaine):
         return parseIFT(chaine)
     else:
         try : 
-            return calcul(chaine)
-        except : 
+            return calcul(chaine.replace(" ", "")) # Pas d'espace (utile) dans les calculs
+        except :
             return Erreur("Le calcul a échoué")
 
 if __name__ == "__main__":
     print(result_chaine("a1"))
-    print(str(result_chaine("12.2.2+3344 45,55 43,233,4")))
+    print(result_chaine("a1 - a1#0,1 +2*a2"))
+
 
 
 
