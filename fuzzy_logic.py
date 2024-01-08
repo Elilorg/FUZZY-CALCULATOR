@@ -185,32 +185,55 @@ class NFT(Trapèseflou) :
     def __str__(self) : 
         return "NFT[" + str(self.a1) + " "+ str(self.a2) + " " + "str(self.a4)"+ "]"
     
-        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ " "+str(self.h)+"]"
-def conv(nombre):
-    if "," in nombre:
-        chaine = nombre.split(",")
-        return float(chaine[0] + "."+ chaine[1])
-    return int(nombre)
+
+
+def convert_to_float(nombre):
+    """
+    conertit un nb en float, sans erreurs
+    """
+    if "," in nombre or "." in nombre:
+        chaine = nombre.replace(",", ".")
+        try :  
+            result = float(chaine) 
+        except : 
+            return None
+        return float(chaine)
+    try : 
+        result = int(nombre)
+    except :
+        return None 
+    return result
 
 def parseIFT(chaine):
-    arg = [conv(i) for i in chaine.split(" ") if len(i) > 0 ]
+    """
+    crée un IFT à partir d'une chaine str
+    """
+    arg = [convert_to_float(i) for i in chaine.split(" ") if len(i) > 0 ]
+    if any(i is None for i in arg):
+        return Erreur("Chaine invalide")
+    
+
     if len(arg) == 2:
         return Intervalle_net_continu(arg[0], arg[1])
     if len(arg) == 3:
         return Trapèseflou(arg[0], arg[1], arg[1], arg[2])
-    if len(arg) == 4:
+    if len(arg) == 4: # IFT ou NFT ? 
         if 0<arg[3] and arg[3]<1:
-            return Trapèseflou(arg[0], arg[1], arg[1], arg[2], arg[3])
+            return Trapèseflou(arg[0], arg[1], arg[1], arg[2], h=arg[3])
         else:
             return Trapèseflou(arg[0], arg[1], arg[2], arg[3])
     if len(arg) == 5:
-        return Trapèseflou(arg[0], arg[1], arg[2], arg[3], arg[4])
+        return Trapèseflou(arg[0], arg[1], arg[2], arg[3],h = arg[4])
     return Erreur("Pas le bon nombre de paramètres")
 
 def get_value(chaine):
+    """
+    si la chaine est un nb, on le converti en trapèse flou mais net ducoup. 
+    Sinon aller chercher avec l'id
+    """
     check_num = chaine.replace(",", "")
     if check_num.isnumeric():
-        nb = conv(chaine)
+        nb = convert_to_float(chaine)
         return Trapèseflou(nb,nb,nb,nb,1)
 
     """
@@ -218,23 +241,33 @@ def get_value(chaine):
     """
     dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
     return dico[chaine]
+
+
 def calcul(chaine):
-    if "+" in chaine:
-        return calcul(chaine.split("+")[0]) + calcul("".join(chaine.split("+")[1:]))
-    if "-" in chaine:
-        return calcul(chaine.split("-")[0]) - calcul("".join(chaine.split("-")[1:]))
     if "*" in chaine:
         return calcul(chaine.split("*")[0]) * calcul("".join(chaine.split("*")[1:]))
     if "/" in chaine:
         return calcul(chaine.split("/")[0]) / calcul("".join(chaine.split("/")[1:]))
+    if "+" in chaine:
+        return calcul(chaine.split("+")[0]) + calcul("".join(chaine.split("+")[1:]))
+    if "-" in chaine:
+        return calcul(chaine.split("-")[0]) - calcul("".join(chaine.split("-")[1:]))
     return get_value(chaine)
 
 def result_chaine(chaine):
-    chaine_check = "".join(chaine.split(" "))
-    chaine_check = chaine_check.replace(",", "")
+    """
+    Le parseur
+    """
+    chaine_check = chaine.replace(" ", "").replace(",", "").replace("." , "")
     if chaine_check.isnumeric():
         return parseIFT(chaine)
     else:
         return calcul(chaine_check)
+    
+
+if __name__ == "__main__":
+    print(result_chaine("a1"))
+    print(result_chaine("a1 - a1"))
+
 
 
