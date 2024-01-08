@@ -139,7 +139,7 @@ class Trapèseflou():
     def troncature(self, h):
         """Fait une troncature de l'ITF en h"""
         if type(h) != float and type(h) != int:
-            return Erreur("H doit être un scalaire")
+            return Erreur(str(h) + " not int or float")
         if h > self.h:
             return Erreur("H est au dessus de la hauteur de l'intervalle")
         elif h == self.h:
@@ -200,12 +200,13 @@ def convert_to_float(nombre):
         try :  
             result = float(chaine) 
         except : 
-            return None
+            return Erreur(str(nombre) + " not float")
         return float(chaine)
     try : 
         result = int(nombre)
     except :
-        return None 
+        return Erreur(str(nombre) + " not float")
+
     return result
 
 def parseIFT(chaine):
@@ -213,8 +214,8 @@ def parseIFT(chaine):
     crée un IFT à partir d'une chaine str
     """
     arg = [convert_to_float(i) for i in chaine.split(" ") if len(i) > 0 ]
-    if any(i is None for i in arg):
-        return Erreur("Chaine invalide")
+    if any(type(i) == Erreur for i in arg):
+        return arg.index(key=lambda x: type(x) == Erreur)
     
 
     if len(arg) == 2:
@@ -234,33 +235,50 @@ def get_value(chaine):
     """
     si la chaine est un nb, on le converti en trapèse flou mais net ducoup. 
     Sinon aller chercher avec l'id
+    Ca ca va dans l'interface de la calculatrice
     """
-    check_num = chaine.replace(",", "")
+    check_num = chaine.replace(",", "").replace(".", "")
     if check_num.isnumeric():
         nb = convert_to_float(chaine)
-        if nb is None : return Erreur(chaine + " convertion to float impossible")
+        if type(nb) == Erreur : return nb
         return Trapèseflou(nb,nb,nb,nb,1)
 
     """
     Remplacer par la value dans le grid
     """
     dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
-    return dico[chaine]
+    result = dico.get(chaine)
+    if result is None:
+        return Erreur(chaine + " ID invalide")
+    return result
     #return Erreur(chaine + " n'est pas un nb valide")
 
 
-def calcul(chaine):
-    if "*" in chaine:
-        return calcul(chaine.split("*")[0]) * calcul("".join(chaine.split("*")[1:]))
-    if "/" in chaine:
-        return calcul(chaine.split("/")[0]) / calcul("".join(chaine.split("/")[1:]))
+def calcul(chaine): # Donc ca aussi ca va dans l'interface 
     if "+" in chaine:
-        return calcul(chaine.split("+")[0]) + calcul("".join(chaine.split("+")[1:]))
+        a, b = split_chaine(chaine, "+")
+        return add(a,b)
     if "-" in chaine:
-        return calcul(chaine.split("-")[0]) - calcul("".join(chaine.split("-")[1:]))
+        a, b = split_chaine(chaine, "-")
+        return sub(a,b)
+    if "*" in chaine:
+        a, b = split_chaine(chaine, "*")
+        return mul(a,b)
+    if "/" in chaine:
+        a, b = split_chaine(chaine, "/")
+        return div(a,b)
     if "#" in chaine:
-        return calcul(chaine.split("#")[0]).troncature(convert_to_float(chaine.split("#")[1]))
+        return tronc(calcul(chaine.split("#")[0]), convert_to_float(chaine.split("#")[1]))
     return get_value(chaine)
+
+def split_chaine(chaine, symbole):
+    """ 
+    cette focntion fait partie de la recurtion de calcul. 
+    elle permet de diviser une chaine en deux parties
+    et de lancer le calcul sur chacune d'elles
+    """
+    splited = chaine.split(symbole)
+    return calcul(splited[0]), calcul("".join(splited[1:]))
 
 def result_chaine(chaine):
     """
@@ -272,12 +290,53 @@ def result_chaine(chaine):
     else:
         try : 
             return calcul(chaine.replace(" ", "")) # Pas d'espace (utile) dans les calculs
-        except :
+        except Exception as e:
+            raise e
             return Erreur("Le calcul a échoué")
+
+
+
+## FONCTIONS OPERATIONS DE BASE ##
+## PERMETTENT DE CATCH LES ERREURS ##
+## ET DE LES RENVOYER A TRAVERS LE CALCUL ##
+def mul(a,b) : 
+    if type(a) == Erreur :
+        return a
+    elif type(b) == Erreur :
+        return b
+    return a*b
+
+def add(a,b) : 
+    if type(a) == Erreur :
+        return a
+    elif type(b) == Erreur :
+        return b
+    return a+b
+
+def sub(a,b) : 
+    if type(a) == Erreur :
+        return a
+    elif type(b) == Erreur :
+        return b
+    return a-b
+
+def div(a,b) :
+    if type(a) == Erreur :
+        return a
+    elif type(b) == Erreur :
+        return b
+    return a/b
+
+def tronc(a,b) :
+    if type(a) == Erreur :
+        return a
+    elif type(b) == Erreur :
+        return b
+    return a.troncature(b)
 
 if __name__ == "__main__":
     print(result_chaine("a1"))
-    print(result_chaine("a1 - a1#0,1 +2*a2"))
+    print(result_chaine("a1-a2+3"))
 
 
 
