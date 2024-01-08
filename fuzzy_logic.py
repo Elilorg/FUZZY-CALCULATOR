@@ -4,6 +4,9 @@ import random
 class Erreur():
     def __init__(self, message):
         self.message = message
+
+    def __str__(self):
+        return self.message
 class Intervalle_net_continu():
     def __init__(self, a1, a2):
         self.a1 = a1
@@ -165,6 +168,49 @@ class Trapèseflou():
             return Intervalle_net_continu(A1, A2)
         else:
             return None  # rien dans l'alpha coupe
+def conv(nombre):
+    if "," in nombre:
+        chaine = nombre.split(",")
+        return float(chaine[0] + "."+ chaine[1])
+    return int(nombre)
+
+def parseIFT(chaine):
+    arg = [conv(i) for i in chaine.split(" ") if len(i) > 0 ]
+    if len(arg) == 2:
+        return Intervalle_net_continu(arg[0], arg[1])
+    if len(arg) == 3:
+        return Trapèseflou(arg[0], arg[1], arg[1], arg[2])
+    if len(arg) == 4:
+        if 0<arg[3] and arg[3]<1:
+            return Trapèseflou(arg[0], arg[1], arg[1], arg[2], arg[3])
+        else:
+            return Trapèseflou(arg[0], arg[1], arg[2], arg[3])
+    if len(arg) == 5:
+        return Trapèseflou(arg[0], arg[1], arg[2], arg[3], arg[4])
+    return Erreur("Pas le bon nombre de paramètres")
+
+def parseChain(chaine):
+    """Pas encore fonctionnelle
+    chaine_plus = chaine.split("+")
+    print(chaine_plus)
+    chaine_moins = [i.split("-") for i in chaine_plus]
+    chaine_moins_dic = {i:i.split("-") for i in chaine_plus}
+    print(chaine_moins)
+    chaine_times = [str(i).split("*") for i in chaine_moins]
+    print(chaine_times)
+    chaine_times_dic = {i:str(i).split("*") for i in chaine_moins}
+    chaine_div = [str(i).split("/") for i in chaine_times]
+    chaine_div_dic = {i:str(i).split("/") for i in chaine_times}
+    return(chaine_div)"""
+
+def parseResult(chaine):
+    chaine = chaine.lower()
+    check_num = "".join(chaine.split(" "))
+    if check_num.isnumeric():
+        return parseIFT(chaine)
+    else:
+        return parseChain(chaine)
 
 
+print(parseResult("a1+a2-a4*a3/a2"))
 
