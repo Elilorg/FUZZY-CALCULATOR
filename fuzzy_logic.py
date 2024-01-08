@@ -77,10 +77,10 @@ class Intervalle_net():
 
 class Trapèseflou():
     def __init__(self, a1, a2, a3, a4, h=1):
-        if not (a1 <= a2 <= a3):
-            return Erreur("The arguments must be ordered")
+        if not (a1 <= a2 <= a3 <= a4):
+            return Erreur("mauvais ordre des args")
         if h <= 0:
-            return Erreur("The height must be positive")
+            return Erreur("Hauteur négative")
         self.a1 = a1
         self.a2 = a2
         self.a3 = a3
@@ -138,6 +138,8 @@ class Trapèseflou():
 
     def troncature(self, h):
         """Fait une troncature de l'ITF en h"""
+        if type(h) != float and type(h) != int:
+            return Erreur("H doit être un scalaire")
         if h > self.h:
             return Erreur("H est au dessus de la hauteur de l'intervalle")
         elif h == self.h:
