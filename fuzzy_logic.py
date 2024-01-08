@@ -46,6 +46,8 @@ class Intervalle_net_continu():
 
         return Intervalle_net(min(self.a1, other.a1), max(self.a2, other.a2))
 
+    def __str__(self) -> str:
+        return "[" + str(self.a1) + ";" + str(self.a2) + "]"
 
 class Intervalle_net():
     def __init__(self, *args):
@@ -168,6 +170,9 @@ class Trapèseflou():
             return Intervalle_net_continu(A1, A2)
         else:
             return None  # rien dans l'alpha coupe
+
+    def __str__(self) -> str:
+        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ "]"
 def conv(nombre):
     if "," in nombre:
         chaine = nombre.split(",")
@@ -203,14 +208,4 @@ def parseChain(chaine):
     chaine_div_dic = {i:str(i).split("/") for i in chaine_times}
     return(chaine_div)"""
 
-def parseResult(chaine):
-    chaine = chaine.lower()
-    check_num = "".join(chaine.split(" "))
-    if check_num.isnumeric():
-        return parseIFT(chaine)
-    else:
-        return parseChain(chaine)
-
-
-print(parseResult("a1+a2-a4*a3/a2"))
 

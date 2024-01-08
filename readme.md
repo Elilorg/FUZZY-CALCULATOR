@@ -19,22 +19,20 @@ Voici les nouveaux controles :
 
 # A faire 
 
-- AJOUTER UN MENU 
-    - création de la possibilité de donner un offset à la grille : done
-    - création de la possibilité de travailler avec différentes grilles : en cour
-    - possibilité d'ouvrir le menu puis de séléctionner une option qui te fait revenir a la liste principale.
+- AJOUTER UN MENU : **FAIT** 
 
-- FAIRE ROULER LA LISTE DE CALCULS  : fait
+- FAIRE ROULER LA LISTE DE CALCULS  : **FAIT**
     - la liste s'étend automatiquement : fait
     - plus que 26 variables serait bien. 
-    - petit bug : la couleur reste en focus quand on fait monter la liste
+    - petit bug : la couleur reste en focus quand on fait monter la liste : **fix**
 - CREER UN MODE TEXTE AVEC UN ECHAP ( LES ARROW KEYS verticales ) 
-    - créer text mode basique : fait
+    - créer text mode basique : **fait**
+    - disocié le bouton texte focused du bouton focused : **fait**
     - créer un curseur pour la navigation
 
 - CREER LA CALCULATRICE
-    - Creer les objets flous (IFT, NTF, Intervalles, etc..0) done ! 
-    - intégrer les calculs avec l'interface
+    - Creer les objets flous (IFT, NTF, Intervalles, etc..0) done !  : **fait**
+    - intégrer les calculs avec l'interface : *en cour*
     
 
 # Attention
@@ -56,7 +54,21 @@ Tout cela n'est pas permis par la numworks qui ne supporte pas ces feature de py
 
 **la class textinput** : c'est un dérivé de la classe bouton mais en plus de  ca, son action quand activé est de lancer le text mode, il a aussi ka fonction add char et del char qui permettent d'ajouter et retirer les caractère. Il a également deux méthode : enter_text_mode et exit_text_mode. Son action est toujours : toggle text mode : si il est en text mode il en sors, et si il est en dehors du text mode il y entre. 
 
-
+**la class bouron_calcul** C'est elle qui gère de stocker et interpréter le calcul etstocker et afficher le résultat. Le résultat est un objet flou ou une erreur. (on pourrais peut etre implémenter un objet Erreur qui contient l'erreur) qui est un texte qui commence par ERREUR. Quand on fait un calcul il y a 2 possibilité. 
+1. On crée une variable a partir de nombre, de zéro
+    - On récupère le type d'objet qu'on veut a partir du menu
+    - On parse les nombres (séparés par des espaces)
+    - On crée l'objet 
+    - on le renvoie dans self.resultat
+2. On fait un calcul entre 2 objets flous. 
+    - Ici, il faut récupérer les résultats des autres boutons calcul, (c la liste qui le fait?)  *ici, a l'aide de self.grid, on fait self.grid.calculs[id] et on retrouve nos petits comme ca car les boutons ont acces a leur grid. C'est la liste globale qui gère la grid*
+    - interpréter le calcul
+    - renvoyer le résultat dans self.résultat 
+3. Un calcul entre 1 objet flou et un scalaire. *la question est quelle touche et symbole pour ce genre d'opérations ?*
+    - On récupère les résultats
+    - On interprète le calcul
+    - on renvoie. 
+Donc : comment on récupère les anciens résultats. 
 
 **la class bouton valeur** Cette classe représente les boutons qui sont a gauche des calcul. Elle permettent d'ajouter leur id au calcul en cour simplement en se déplaceemnt et en appuyant sur entrée. Elle définis simplement l'action d'ajouter son id a l'input qui est focused.
 
