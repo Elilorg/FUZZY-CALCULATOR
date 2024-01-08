@@ -1,7 +1,9 @@
 import math
 import random
 
-
+class Erreur():
+    def __init__(self, message):
+        self.message = message
 class Intervalle_net_continu():
     def __init__(self, a1, a2):
         self.a1 = a1
@@ -25,11 +27,11 @@ class Intervalle_net_continu():
 
     def __pow__(self, value):
         if value != -1:
-            raise ValueError("Only -1 is supported")
+            return Erreur("Only -1 is supported")
         if self.a1 == 0 or self.a2 == 0:
-            raise ValueError("Only non-zero intervals are supported")
+            return Erreur("Only non-zero intervals are supported")
         if self.a1 <= 0 <= self.a2:
-            raise ValueError("Only  strictly positive or strictly négative intervals are supported by this operation.")
+            return Erreur("Only  strictly positive or strictly négative intervals are supported by this operation.")
         return Intervalle_net(1 / self.a2, 1 / self.a1)
 
     def __div__(self, other):
@@ -37,7 +39,7 @@ class Intervalle_net_continu():
 
     def union(self, other):
         if self.a2 < other.a1 or other.a2 < self.a1:
-            raise ValueError("The intervals must be joined")
+            return Erreur("The intervals must be joined")
 
         return Intervalle_net(min(self.a1, other.a1), max(self.a2, other.a2))
 
@@ -45,12 +47,12 @@ class Intervalle_net_continu():
 class Intervalle_net():
     def __init__(self, *args):
         if len(args % 2 != 0):
-            raise ValueError("The number of arguments must be even")
+            return Erreur("The number of arguments must be even")
 
         self.intervalles_continus = []
         for i in range(0, len(args), 2):
             if args[i] >= args[i + 1]:
-                raise ValueError("The arguments must be ordered")
+                return Erreur("The arguments must be ordered")
             self.intervalles_continus.append(Intervalle_net_continu(args[i], args[i + 1]))
 
     def simplifier(self):
@@ -68,9 +70,9 @@ class Intervalle_net():
 class Trapèseflou():
     def __init__(self, a1, a2, a3, a4, h=1):
         if not (a1 <= a2 <= a3):
-            raise ValueError("The arguments must be ordered")
+            return Erreur("The arguments must be ordered")
         if h <= 0:
-            raise ValueError("The height must be positive")
+            return Erreur("The height must be positive")
         self.a1 = a1
         self.a2 = a2
         self.a3 = a3
@@ -129,7 +131,7 @@ class Trapèseflou():
     def troncature(self, h):
         """Fait une troncature de l'ITF en h"""
         if h > self.h:
-            raise ValueError("H est au dessus de la hauteur de l'intervalle")
+            return Erreur("H est au dessus de la hauteur de l'intervalle")
         elif h == self.h:
             return self
         else:
