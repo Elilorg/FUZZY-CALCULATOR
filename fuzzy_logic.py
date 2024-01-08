@@ -174,7 +174,7 @@ class Trapèseflou():
             return None  # rien dans l'alpha coupe
 
     def __str__(self) -> str:
-        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ "]"
+        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ " "+ str(self.h)+"]"
 
 
 
@@ -191,6 +191,7 @@ def convert_to_float(nombre):
     """
     conertit un nb en float, sans erreurs
     """
+    print(nombre)
     if "," in nombre or "." in nombre:
         chaine = nombre.replace(",", ".")
         try :  
@@ -253,7 +254,7 @@ def calcul(chaine):
     if "-" in chaine:
         return calcul(chaine.split("-")[0]) - calcul("".join(chaine.split("-")[1:]))
     if "#" in chaine:
-        return calcul(chaine.split("-")[0]).troncature(convert_to_float(chaine.split("-")[0]))
+        return calcul(chaine.split("#")[0]).troncature(convert_to_float(chaine.split("#")[1]))
     return get_value(chaine)
 
 def result_chaine(chaine):
@@ -261,16 +262,17 @@ def result_chaine(chaine):
     Le parseur
     """
     chaine_check = chaine.replace(" ", "").replace(",", "").replace("." , "")
+    chaine_calcul = chaine.replace(" ", "").replace("." , "")
     if chaine_check.isnumeric():
         return parseIFT(chaine)
     else:
-        return calcul(chaine_check)
+        return calcul(chaine_calcul)
     
 
 if __name__ == "__main__":
     print(result_chaine("a1"))
-    print(result_chaine("a1 - a1"))
-    print("#test".split("#"))
+    print(result_chaine("a1 - a1#0,1 +2*a2"))
+
 
 
 
