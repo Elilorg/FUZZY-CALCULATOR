@@ -7,7 +7,7 @@ class Erreur():
         self.message = message
     
     def __str__(self) -> str:
-        return "ERREUR : " + self.message
+        return "ERR: " + self.message
 
 
 class Intervalle_net_continu():
@@ -53,10 +53,10 @@ class Intervalle_net_continu():
         return "[" + str(self.a1) + ";" + str(self.a2) + "]"
 
 class Intervalle_net():
-    def __init__(self, *args):
+    def __init__(self, *args): # Attention pas sur que ca marche le *args
         if len(args % 2 != 0):
-            return Erreur("The number of arguments must be even")
-
+            #return Erreur("The number of arguments must be even")
+            pass
         self.intervalles_continus = []
         for i in range(0, len(args), 2):
             if args[i] >= args[i + 1]:
@@ -78,9 +78,8 @@ class Intervalle_net():
 class Trapèseflou():
     def __init__(self, a1, a2, a3, a4, h=1):
         if not (a1 <= a2 <= a3 <= a4):
-            return Erreur("mauvais ordre des args")
-        if h <= 0:
-            return Erreur("Hauteur négative")
+            pass
+            #return Erreur("mauvais ordre des args")
         self.a1 = a1
         self.a2 = a2
         self.a3 = a3
@@ -141,7 +140,7 @@ class Trapèseflou():
         if type(h) != float and type(h) != int:
             return Erreur(str(h) + " not int or float")
         if h > self.h:
-            return Erreur("H est au dessus de la hauteur de l'intervalle")
+            return Erreur(str(h) + "> h de l'intervalle")
         elif h == self.h:
             return self
         else:
@@ -177,16 +176,16 @@ class Trapèseflou():
             return None  # rien dans l'alpha coupe
 
     def __str__(self) -> str:
-        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ " "+ str(self.h)+"]"
+        
+        if self.a2 == self.a3:
+            return "NFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) +" " + "h=" + str(self.h) + "]"  
+        
+
+        return  "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ " h="+ str(self.h)+"]"
 
 
 
-class NFT(Trapèseflou) : 
-    def __init__(self, a1, a2, a3, h=1):
-        super().__init__(a1, a2, a2, a3, h)
-    
-    def __str__(self) : 
-        return "NFT[" + str(self.a1) + " "+ str(self.a2) + " " + "str(self.a4)"+ "]"
+
     
 
 
@@ -219,80 +218,33 @@ def parseIFT(chaine):
     
 
     if len(arg) == 2:
+        if arg[1] <= arg[0] : 
+            return Erreur("Bornes mal ordonnées")
         return Intervalle_net_continu(arg[0], arg[1])
     if len(arg) == 3:
+        if not (arg[0] <= arg[1] <= arg[2]):
+            return Erreur("Bornes mal ordonnées")
         return Trapèseflou(arg[0], arg[1], arg[1], arg[2])
     if len(arg) == 4: # IFT ou NFT ? 
-        if 0<arg[3] and arg[3]<1:
+        if 0 < arg[3] < 1:
+            if not (arg[0] <= arg[1] <= arg[2]):
+                return Erreur("Bornes mal ordonnées")
             return Trapèseflou(arg[0], arg[1], arg[1], arg[2], h=arg[3])
         else:
+            if not (arg[0] <= arg[1] <= arg[2] <= arg[3]):
+                return Erreur("Bornes mal ordonnées")
             return Trapèseflou(arg[0], arg[1], arg[2], arg[3])
     if len(arg) == 5:
+        if not (arg[0] < arg[1] < arg[2] < arg[3]):
+            return Erreur("Bornes mal ordonnées")
         return Trapèseflou(arg[0], arg[1], arg[2], arg[3],h = arg[4])
     return Erreur("Pas le bon nombre de paramètres")
 
-def get_value(chaine):
-    """
-    si la chaine est un nb, on le converti en trapèse flou mais net ducoup. 
-    Sinon aller chercher avec l'id
-    Ca ca va dans l'interface de la calculatrice
-    """
-    check_num = chaine.replace(",", "").replace(".", "")
-    if check_num.isnumeric():
-        nb = convert_to_float(chaine)
-        if type(nb) == Erreur : return nb
-        return Trapèseflou(nb,nb,nb,nb,1)
-
-    """
-    Remplacer par la value dans le grid
-    """
-    dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
-    result = dico.get(chaine)
-    if result is None:
-        return Erreur(chaine + " ID invalide")
-    return result
-    #return Erreur(chaine + " n'est pas un nb valide")
 
 
-def calcul(chaine): # Donc ca aussi ca va dans l'interface 
-    if "+" in chaine:
-        a, b = split_chaine(chaine, "+")
-        return add(a,b)
-    if "-" in chaine:
-        a, b = split_chaine(chaine, "-")
-        return sub(a,b)
-    if "*" in chaine:
-        a, b = split_chaine(chaine, "*")
-        return mul(a,b)
-    if "/" in chaine:
-        a, b = split_chaine(chaine, "/")
-        return div(a,b)
-    if "#" in chaine:
-        return tronc(calcul(chaine.split("#")[0]), convert_to_float(chaine.split("#")[1]))
-    return get_value(chaine)
 
-def split_chaine(chaine, symbole):
-    """ 
-    cette focntion fait partie de la recurtion de calcul. 
-    elle permet de diviser une chaine en deux parties
-    et de lancer le calcul sur chacune d'elles
-    """
-    splited = chaine.split(symbole)
-    return calcul(splited[0]), calcul("".join(splited[1:]))
 
-def result_chaine(chaine):
-    """
-    Le parseur
-    """
-    chaine_check = chaine.replace(" ", "").replace(",", "").replace("." , "")
-    if chaine_check.isnumeric(): # Que des nombres
-        return parseIFT(chaine)
-    else:
-        try : 
-            return calcul(chaine.replace(" ", "")) # Pas d'espace (utile) dans les calculs
-        except Exception as e:
-            raise e
-            return Erreur("Le calcul a échoué")
+
 
 
 
@@ -333,11 +285,6 @@ def tronc(a,b) :
     elif type(b) == Erreur :
         return b
     return a.troncature(b)
-
-if __name__ == "__main__":
-    print(result_chaine("a1"))
-    print(result_chaine("a1-a2+3"))
-
 
 
 

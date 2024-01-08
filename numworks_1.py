@@ -14,6 +14,26 @@ yellow = (255, 255, 0)
 green = (0, 255, 0)
 g = green
 
+
+KEY_TO_CHAR = {
+            KEY_ONE : "1",
+            KEY_TWO : "2",
+            KEY_THREE : "3",
+            KEY_FOUR : "4",
+            KEY_FIVE : "5",
+            KEY_SIX : "6",
+            KEY_SEVEN : "7",
+            KEY_EIGHT : "8",
+            KEY_NINE : "9",
+            KEY_ZERO : "0",
+            KEY_ANS : " ",
+            KEY_DOT : ".",
+            KEY_SHIFT : " ",
+            KEY_PLUS : "+",
+            KEY_MINUS : "-",
+            KEY_MULTIPLICATION : "*",
+            KEY_DIVISION : "/",
+        }
 ### BOUTONS
 
 class class_bouton : 
@@ -114,21 +134,7 @@ class classtextinput(class_bouton) :
     def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None) :
         action = lambda : self.toggle_text_mode()
         super().__init__(text, color, x, y, focused, action)
-        self.key_to_char = {
-            KEY_ONE : "1",
-            KEY_TWO : "2",
-            KEY_THREE : "3",
-            KEY_FOUR : "4",
-            KEY_FIVE : "5",
-            KEY_SIX : "6",
-            KEY_SEVEN : "7",
-            KEY_EIGHT : "8",
-            KEY_NINE : "9",
-            KEY_ZERO : "0",
-            KEY_ANS : " ",
-            KEY_DOT : ".",
-            KEY_SHIFT : " ",
-        }
+        
         self.text_mode = False
         self.text_mode_color = (230, 230, 230) 
     
@@ -143,7 +149,7 @@ class classtextinput(class_bouton) :
         draw_string(self.text, self.coordinates[0], self.coordinates[1], (0, 0, 0))
 
     def add_char_with_action(self, key_number) :
-        self.add_char(self.key_to_char[key_number])
+        self.add_char(KEY_TO_CHAR[key_number])
     
     def del_char(self) :
         if len(self.text) == 0 : 
@@ -211,7 +217,7 @@ class class_bouton_calcul(classtextinput) :
         draw_string(result_affiche, self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
     
     def exit_text_mode(self):
-        self.resultat = self.grid.get_result_by_id(self.text) # pour test ici se jouera l'interpretation du calcul
+        self.resultat = self.evaluate(self.text)
         super().exit_text_mode()
         self.draw()  # Oui, risque de redraw alors qu'on a déja draw parce que texte vide. A voir comment ca se fix
 
@@ -229,6 +235,63 @@ class class_bouton_calcul(classtextinput) :
         self.type_resultat = type_resultat
         self.draw()
 
+    def get_value(self, chaine):
+        """
+        si la chaine est un nb, on le converti en trapèse flou mais net ducoup. 
+        Sinon aller chercher avec l'id
+        Ca ca va dans l'interface de la calculatrice
+        """
+        check_num = chaine.replace(",", "").replace(".", "")
+        if check_num.isnumeric():
+            nb = convert_to_float(chaine)
+            if type(nb) == Erreur : 
+                return nb
+            
+            return Trapèseflou(nb,nb,nb,nb,1)
+
+        else : 
+            return self.grid.get_result_by_id(chaine)
+        #return Erreur(chaine + " n'est pas un nb valide")
+
+
+    def calcul(self, chaine): # Donc ca aussi ca va dans l'interface 
+        if "+" in chaine:
+            a, b = self.split_chaine(chaine, "+")
+            return add(a,b)
+        if "-" in chaine:
+            a, b = self.split_chaine(chaine, "-")
+            return sub(a,b)
+        if "*" in chaine:
+            a, b = self.split_chaine(chaine, "*")
+            return mul(a,b)
+        if "/" in chaine:
+            a, b = self.split_chaine(chaine, "/")
+            return div(a,b)
+        if "#" in chaine:
+            return tronc(self.calcul(chaine.split("#")[0]), convert_to_float(chaine.split("#")[1]))
+        return self.get_value(chaine)
+    def split_chaine(self, chaine, symbole):
+        """ 
+        cette focntion fait partie de la recurtion de calcul. 
+        elle permet de diviser une chaine en deux parties
+        et de lancer le calcul sur chacune d'elles
+        """
+        splited = chaine.split(symbole)
+        return self.calcul(splited[0]), self.calcul("".join(splited[1:]))
+
+    def evaluate(self, chaine):
+        """
+        Le parseur
+        """
+        chaine_check = chaine.replace(" ", "").replace(",", "").replace("." , "")
+        if chaine_check.isnumeric(): # Que des nombres
+            return parseIFT(chaine)
+        else:
+            try : 
+                return self.calcul(chaine.replace(" ", "")) # Pas d'espace (utile) dans les calculs
+            except Exception as e:
+                raise e
+                return Erreur("Le calcul a échoué")
 
 ### INTERFACES ###
 class class_grid:
@@ -510,7 +573,7 @@ class class_liste_principale(class_grid) :
         A1, A2, A3, A4 , etc...
         """
         if type(id) != str or len(id) == 0 or len(id) > 2:
-            return Erreur("id invalide")
+            return Erreur(str(id) + " invalide id")
 
         print(self.ids)
         index = self.ids.index(id[0]) 
@@ -562,7 +625,7 @@ class class_interface() :
 
         self.text_mode_actions = {
             KEY_BACKSPACE : lambda : self.text_focused_button.del_char() ,
-            "lettres" : [KEY_ONE,KEY_TWO,KEY_THREE,KEY_FOUR,KEY_FIVE,KEY_SIX,KEY_SEVEN,KEY_EIGHT,KEY_NINE, KEY_ZERO, KEY_ANS, KEY_DOT, KEY_SHIFT]
+            "lettres" : [KEY_ONE,KEY_TWO,KEY_THREE,KEY_FOUR,KEY_FIVE,KEY_SIX,KEY_SEVEN,KEY_EIGHT,KEY_NINE, KEY_ZERO, KEY_ANS, KEY_DOT, KEY_SHIFT, KEY_PLUS, KEY_DIVISION, KEY_MINUS, KEY_MULTIPLICATION]
         }
 
         self.action_rate_constant = 0.15
