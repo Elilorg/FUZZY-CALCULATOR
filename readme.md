@@ -19,22 +19,20 @@ Voici les nouveaux controles :
 
 # A faire 
 
-- AJOUTER UN MENU 
-    - création de la possibilité de donner un offset à la grille : done
-    - création de la possibilité de travailler avec différentes grilles : en cour
-    - possibilité d'ouvrir le menu puis de séléctionner une option qui te fait revenir a la liste principale.
+- AJOUTER UN MENU : **FAIT** 
 
-- FAIRE ROULER LA LISTE DE CALCULS  : fait
+- FAIRE ROULER LA LISTE DE CALCULS  : **FAIT**
     - la liste s'étend automatiquement : fait
     - plus que 26 variables serait bien. 
-    - petit bug : la couleur reste en focus quand on fait monter la liste
+    - petit bug : la couleur reste en focus quand on fait monter la liste : **fix**
 - CREER UN MODE TEXTE AVEC UN ECHAP ( LES ARROW KEYS verticales ) 
-    - créer text mode basique : fait
+    - créer text mode basique : **fait**
+    - disocié le bouton texte focused du bouton focused : **fait**
     - créer un curseur pour la navigation
 
 - CREER LA CALCULATRICE
-    - Creer les objets flous (IFT, NTF, Intervalles, etc..0) done ! 
-    - intégrer les calculs avec l'interface
+    - Creer les objets flous (IFT, NTF, Intervalles, etc..0) done !  : **fait**
+    - intégrer les calculs avec l'interface : *en cour*
     
 
 # Attention

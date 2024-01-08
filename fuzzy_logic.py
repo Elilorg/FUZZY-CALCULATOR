@@ -4,6 +4,8 @@ import random
 class Erreur():
     def __init__(self, message):
         self.message = message
+
+
 class Intervalle_net_continu():
     def __init__(self, a1, a2):
         self.a1 = a1
@@ -43,6 +45,8 @@ class Intervalle_net_continu():
 
         return Intervalle_net(min(self.a1, other.a1), max(self.a2, other.a2))
 
+    def __str__(self) -> str:
+        return "[" + str(self.a1) + ";" + str(self.a2) + "]"
 
 class Intervalle_net():
     def __init__(self, *args):
@@ -65,6 +69,8 @@ class Intervalle_net():
                     self.intervalles_continus[i] = self.intervalles_continus[i] + self.intervalles_continus[j]
                     del self.intervalles_continus[j]
                     break
+    
+
 
 
 class Trapèseflou():
@@ -165,6 +171,15 @@ class Trapèseflou():
             return Intervalle_net_continu(A1, A2)
         else:
             return None  # rien dans l'alpha coupe
+    
+    def __str__(self) -> str:
+        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ "]"
 
 
 
+class NFT(Trapèseflou) : 
+    def __init__(self, a1, a2, a3, h=1):
+        super().__init__(a1, a2, a2, a3, h)
+    
+    def __str__(self) : 
+        return "NFT[" + str(self.a1) + " "+ str(self.a2) + " " + "str(self.a4)"+ "]"
