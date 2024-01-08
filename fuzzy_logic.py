@@ -172,7 +172,7 @@ class Trapèseflou():
             return None  # rien dans l'alpha coupe
 
     def __str__(self) -> str:
-        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ "]"
+        return "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ " "+str(self.h)+"]"
 def conv(nombre):
     if "," in nombre:
         chaine = nombre.split(",")
@@ -194,18 +194,34 @@ def parseIFT(chaine):
         return Trapèseflou(arg[0], arg[1], arg[2], arg[3], arg[4])
     return Erreur("Pas le bon nombre de paramètres")
 
-def parseChain(chaine):
-    """Pas encore fonctionnelle
-    chaine_plus = chaine.split("+")
-    print(chaine_plus)
-    chaine_moins = [i.split("-") for i in chaine_plus]
-    chaine_moins_dic = {i:i.split("-") for i in chaine_plus}
-    print(chaine_moins)
-    chaine_times = [str(i).split("*") for i in chaine_moins]
-    print(chaine_times)
-    chaine_times_dic = {i:str(i).split("*") for i in chaine_moins}
-    chaine_div = [str(i).split("/") for i in chaine_times]
-    chaine_div_dic = {i:str(i).split("/") for i in chaine_times}
-    return(chaine_div)"""
+def get_value(chaine):
+    check_num = chaine.replace(",", "")
+    if check_num.isnumeric():
+        nb = conv(chaine)
+        return Trapèseflou(nb,nb,nb,nb,1)
+
+    """
+    Remplacer par la value dans le grid
+    """
+    dico = {"a1" : result_chaine("1 7 8 11 0,2"), "a2": result_chaine("2 4 8 10 0,3")}
+    return dico[chaine]
+def calcul(chaine):
+    if "+" in chaine:
+        return calcul(chaine.split("+")[0]) + calcul("".join(chaine.split("+")[1:]))
+    if "-" in chaine:
+        return calcul(chaine.split("-")[0]) - calcul("".join(chaine.split("-")[1:]))
+    if "*" in chaine:
+        return calcul(chaine.split("*")[0]) * calcul("".join(chaine.split("*")[1:]))
+    if "/" in chaine:
+        return calcul(chaine.split("/")[0]) / calcul("".join(chaine.split("/")[1:]))
+    return get_value(chaine)
+
+def result_chaine(chaine):
+    chaine_check = "".join(chaine.split(" "))
+    chaine_check = chaine_check.replace(",", "")
+    if chaine_check.isnumeric():
+        return parseIFT(chaine)
+    else:
+        return calcul(chaine_check)
 
 
