@@ -360,7 +360,10 @@ class class_liste_principale(class_grid) :
 
     def __init__(self) : 
         self.rows : list[tuple(class_bouton, classtextinput)]= []
-        self.ids = [i for i in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
+        ids = []
+        for j in range(10):
+            ids += [i + str(j) if j != 0 else i for i in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
+        self.ids = ids
         
 
         super().__init__(x_div=4, y_div=5)
