@@ -105,6 +105,7 @@ compliqué.
 - On ne peut pas utiliser *variable_liste pour passer les éléments d'une liste d'un coup
 - Les ```raise error``` ne fonctionnent pas
 - On ne peut pas importer de fonction spécifique. C'est pourquoi on est forcé d'écrire : ```from package import *```
+- utiliser les méthodes ```str.isnumeric()``` ou ```str.isdigit()```
 
 
 Tout cela n'est pas permis par la numworks qui ne supporte pas ces feature de python. 
