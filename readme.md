@@ -19,18 +19,22 @@ Voici les nouveaux controles :
 - point pour faire un point
 - les touches des numéros pour faire des numéros
 
+Pour actualiser le code installé par les utilisateur, il faut run ```minify.sh``` qui minifie les fichier, de manière à ce qu'ils soient utilisables par l'utilisateur, puis les commit. 
+
+**ATTENTION** ne pas commit dans minified sans avoir testé AUSSI sur la calculatrice. 
+
+
 ## Pour tester sur la numworks
 
 Nous n'avons pas encore tester cette dernière vertion de notre programme sur la numworks. 
-Pour l'inetaller, vous devez installer les 2 fichiers python sur vortre calculatrice : 
-```fuzzy_logic.py``` et ```numworks_1.py```. 
+Pour l'installer, vous devez mettre les 2 fichiers python du dossier ```minified``` sur vortre calculatrice : 
+```fuzzy_logic.py``` et ```numworks_1.py```. La vertion que vous devez installer se trouve dans le dossier apellé ```minified```. C'est bien les fichiers de ce dossier que vous devez installer, sans quoi le script ne marchera pas car il prend trop de place sur la calculatrice. 
 
 Pour les installer, il faut aller sur son compte, puis dans "mes scripts". 
 Cliquer sur "Ajouter un script", et faire de meme pour l'autre fichier python. Attention a bien les ajouter en concervant leur nom exact !
 Maintenant qe vos scripts sont sur le site, vous pouvez cliquer sur "Envoyer sur ma calculatrice". 
 
 Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionner.
-**ATTENTION** : il semblerait que cette nouvelle vertion aie des problemes d'optimisation, et que, par concéquant, nous ayons des difficultés à le lancer surla numworks
 
 
 # A faire 
@@ -38,8 +42,8 @@ Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionn
 - AJOUTER UN MENU : **FAIT** 
 
 - FAIRE ROULER LA LISTE DE CALCULS  : **FAIT**
-    - la liste s'étend automatiquement : fait
-    - plus que 26 variables serait bien. 
+    - la liste s'étend automatiquement : **fait**
+    - plus que 26 variables serait bien. **fait**
     - petit bug : la couleur reste en focus quand on fait monter la liste : **fix**
 - CREER UN MODE TEXTE AVEC UN ECHAP ( LES ARROW KEYS verticales ) 
     - créer text mode basique : **fait**
@@ -48,21 +52,11 @@ Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionn
 
 - CREER LA CALCULATRICE
     - Creer les objets flous (IFT, NTF, Intervalles, etc..0) done !  : **fait**
-    - intégrer les calculs avec l'interface : *en cour*
-    
-
-# Attention
-
-- Ne pas utiliser les décorateurs comme ```@property```
-- Ne pas utiliser d'autres packages que maths, time et ceux dans le requirement.txt
-- Les noms de variables doivent être en minuscule et sans accent
-- Les f string ne sont pas supportées
-- On ne peut pas utiliser *variable_liste pour passer les éléments d'une liste d'un coup
-- Les ```raise error``` ne fonctionnent pas
-- On ne peut pas importer de fonction spécifique. C'est pourquoi on est forcé d'écrire : ```from package import *```
-
-
-Tout cela n'est pas permis par la numworks qui ne supporte pas ces feature de python. 
+    - intégrer les calculs avec l'interface : **fait**
+- TERMINER : 
+    - ajouter le calcul de possibilité
+    - améliorer l'interface     
+    - Arrondir les valeurs au millième
 
 # Structure de l'interface 
 **la class bouton** : il fit dans la grid, il contient des infos sur ou il est dans la grid. De la, c'est la grid qui lui donne sa position sur l'écran, et sa taille pour qu'il puisse etre déssiné
@@ -100,3 +94,17 @@ C'est elle qui récolte les inputs. Elle controle les deux grid (bientot deux) q
 *problème à résoudre : les boutons text input ont pour action de activer text mode dans l'interface, donc donner un ordre a un objet au quel ils n'ont pas accès mais en vrai pk pas? Juste daire une fontion externe au code qui s'appelle activate text mode. C juste que les txt inuput sont initialisés dans la liste principale et ca ca va pas. Il faudrait définir l'interface d'abord, puis la fonction d'activation du mode texte, puis les boutons et la liste principale*
 
 compliqué.
+
+
+# Les choses à ne pas faire sur python numworks
+
+- Ne pas utiliser les décorateurs comme ```@property```
+- Ne pas utiliser d'autres packages que maths, time et ceux dans le requirement.txt
+- Les noms de variables doivent être en minuscule et sans accent
+- Les f string ne sont pas supportées
+- On ne peut pas utiliser *variable_liste pour passer les éléments d'une liste d'un coup
+- Les ```raise error``` ne fonctionnent pas
+- On ne peut pas importer de fonction spécifique. C'est pourquoi on est forcé d'écrire : ```from package import *```
+
+
+Tout cela n'est pas permis par la numworks qui ne supporte pas ces feature de python. 

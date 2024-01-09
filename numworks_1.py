@@ -239,7 +239,7 @@ class class_bouton_calcul(classtextinput) :
             if type(nb) == Erreur : 
                 return nb
             
-            return Trapèseflou(nb,nb,nb,nb,1)
+            return Trapeseflou(nb,nb,nb,nb,1)
 
         else : 
             return self.grid.get_result_by_id(chaine)
