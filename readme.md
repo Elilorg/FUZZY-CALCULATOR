@@ -1,5 +1,7 @@
 # Installation
 
+## Pour coder et tester sur ordi
+
 - Installer python3.11
 - installer les packages python avec la commande suivante : 
 
@@ -16,6 +18,18 @@ Voici les nouveaux controles :
 - maj pour faire un espace 
 - point pour faire un point
 - les touches des numéros pour faire des numéros
+
+## Pour tester sur la numworks
+
+Nous n'avons pas encore tester cette dernière vertion de notre programme sur la numworks. 
+Pour l'inetaller, vous devez installer les 2 fichiers python sur vortre calculatrice : 
+```fuzzy_logic.py``` et ```numworks_1.py```. 
+
+Pour les installer, il faut aller sur son compte, puis dans "mes scripts". 
+Cliquer sur "Ajouter un script", et faire de meme pour l'autre fichier python. 
+Maintenant qe vos scripts sont sur le site, vous pouvez cliquer sur "Envoyer sur ma calculatrice". 
+
+Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionner.
 
 # A faire 
 
