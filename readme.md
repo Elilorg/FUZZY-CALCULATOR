@@ -26,10 +26,12 @@ Pour l'inetaller, vous devez installer les 2 fichiers python sur vortre calculat
 ```fuzzy_logic.py``` et ```numworks_1.py```. 
 
 Pour les installer, il faut aller sur son compte, puis dans "mes scripts". 
-Cliquer sur "Ajouter un script", et faire de meme pour l'autre fichier python. 
+Cliquer sur "Ajouter un script", et faire de meme pour l'autre fichier python. Attention a bien les ajouter en concervant leur nom exact !
 Maintenant qe vos scripts sont sur le site, vous pouvez cliquer sur "Envoyer sur ma calculatrice". 
 
 Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionner.
+**ATTENTION** : il semblerait que cette nouvelle vertion aie des problemes d'optimisation, et que, par concéquant, nous ayons des difficultés à le lancer surla numworks
+
 
 # A faire 
 
