@@ -289,4 +289,9 @@ def tronc(a,b) :
     return a.troncature(b)
 
 
-
+def isnumeric(chaine):
+    try : 
+        float(chaine)
+        return True
+    except : 
+        return False

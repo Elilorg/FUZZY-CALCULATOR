@@ -38,19 +38,9 @@ KEY_TO_CHAR = {
 
 class class_bouton : 
     """
-    Cette classe permet d'initialiser ce qui se rapproche le plus d'un bouton (le bouton est toujours rectangulaire ): 
-    Il a les propriété suivante : 
-    - x : l'ensemble des cellules sur les quelles il s'étend horizontalement
-    - y : l'ensemble des cellules sur les quelles il s'étend verticalement
-    - color : la couleur du bouton
-    - focused_color : la couleur du bouton quand il est focus, pour avoir un retour visuel
-    - action : une fonction qui sera appelée lorsqu'on appuie sur le bouton
-    - text : le texte qui sera affiché sur le bouton
-    - focused : un booleen qui permet de savoir si le bouton est focus ou non
-    - cordinates : les coordonnées du bouton sur l'écran (les vraie, pas dans la grille)
-    - grid_coordinates : les coordonnées du bouton dans la grille (coin supérieur gauche)
+   
     """
-    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None) :
+    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = None) :
         """
         les x sont les colonnes ou le bouton s'étend dans la grid
         les y sont les lignes ou le bouton s'étend dans la grid
@@ -63,7 +53,8 @@ class class_bouton :
         self.focused_color = (color[0]+40, color[1]+40, color[2]+40)
 
         self.focused = focused
-        self.action = action
+        if action is not None : 
+            self.action = action
 
 
         self.x = x
@@ -131,8 +122,8 @@ class classtextinput(class_bouton) :
         - enter_text_mode est appellé quand l'interface entre en text-mode, et permet d'effacer le texte par défaut
         - exit text_mode est appellé quand l'interface quitte le mode texte et permet de remettre le texte par défaut si on a rien écrit
     """
-    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None) :
-        action = lambda : self.toggle_text_mode()
+    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action =  None) :
+        action =self.toggle_text_mode
         super().__init__(text, color, x, y, focused, action)
         
         self.text_mode = False
@@ -159,7 +150,7 @@ class classtextinput(class_bouton) :
     
     def enter_text_mode(self) : 
         self.text_mode = True
-        if self.text == "CALC" : 
+        if self.text == None : 
             self.text = ""
             
         self.draw()
@@ -167,7 +158,7 @@ class classtextinput(class_bouton) :
     def exit_text_mode(self) :
         self.text_mode = False
         if self.text == "" : 
-            self.text = "CALC"
+            self.text = None
         self.draw()
     
     def toggle_text_mode(self) :  
@@ -183,25 +174,26 @@ class classtextinput(class_bouton) :
 
 
 class boutonvaleur(class_bouton) :
-    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None) :
+    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = None) :
         self.char = text[0]
-        action = lambda : ajouter_lettre(self.char)        
+        
         super().__init__(text, color, x, y, focused, action)
 
-
+    def action(self) :
+        ajouter_lettre(self.char)
+    
 class result_type_selector(class_bouton) :
-    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None, type_resultat = "%") :
-        action = lambda : self.click()
+    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action =  None, type_resultat = "%") :
         super().__init__(text, color, x, y, focused, action)
         self.type = type_resultat
     
-    def click(self) :
+    def action(self) :
         ajouter_type_resultat(self.type)
         change_grid(main_list)
 
 
 class class_bouton_calcul(classtextinput) :
-    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = lambda : None) :
+    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action = None) :
         super().__init__(text, color, x, y, focused, action)
         self.resultat = None
         self.type_resultat = "%"  # Ca pourrait etre : "IFT[%]" ou "NFT[%]"
@@ -209,11 +201,11 @@ class class_bouton_calcul(classtextinput) :
     def draw(self) :
         print("Draw result with type", self.type_resultat)
         text = self.text
-        self.text = self.type_resultat.replace("%",text)
-        print(self.text)
+        if text is None : text = "CALC"
+        self.text = text
         super().draw()
         result_affiche = str(self.resultat) if self.resultat != None else ""
-        self.text = text
+        if text == "CALC" : self.text = None
         draw_string(result_affiche, self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
     
     def exit_text_mode(self):
@@ -242,7 +234,7 @@ class class_bouton_calcul(classtextinput) :
         Ca ca va dans l'interface de la calculatrice
         """
         check_num = chaine.replace(",", "").replace(".", "")
-        if check_num.isnumeric():
+        if isnumeric(check_num):
             nb = convert_to_float(chaine)
             if type(nb) == Erreur : 
                 return nb
@@ -286,7 +278,7 @@ class class_bouton_calcul(classtextinput) :
         if chaine == "" :
             return None
         chaine_check = chaine.replace(" ", "").replace(",", "").replace("." , "")
-        if chaine_check.isnumeric(): # Que des nombres
+        if isnumeric(chaine_check): # Que des nombres
             return parseIFT(chaine)
         else:
             try : 
@@ -547,7 +539,7 @@ class class_liste_principale(class_grid) :
         if len(self.ids) == 0 :
             print("Plus de lettres")
             return
-        bouton_calcul = class_bouton_calcul("CALC", black, [1, 2, 3], [y_pos])
+        bouton_calcul = class_bouton_calcul(None, black, [1, 2, 3], [y_pos])
         bouton_valeur = boutonvaleur(self.remaining_ids.pop(0) + " = ", white,[0], [y_pos])
         self.add_button(bouton_calcul)
         self.add_button(bouton_valeur)
@@ -694,7 +686,6 @@ def ajouter_type_resultat(type_resultat) :
     if interface.text_focused_button == None : 
         return
     interface.text_focused_button.ajouter_resultat(type_resultat)
-
 
 def ajouter_lettre(char) :
     if interface.text_focused_button == None : 
