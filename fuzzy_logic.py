@@ -151,8 +151,7 @@ class Trapèseflou():
             a3 = - h * (self.a4 - self.a3) / self.h + self.a4
             return Trapèseflou(self.a1, a2, a3, self.a4, h)
 
-    def __str__(self) -> str:
-        return f"({self.a1}, {self.a2}, {self.a3}, {self.a4}, {self.h})"
+    
 
     def valeur(self, x):
         if x == self.a2:  # x dans noyau
