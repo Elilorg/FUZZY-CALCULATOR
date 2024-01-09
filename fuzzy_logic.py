@@ -55,7 +55,7 @@ class Intervalle_net_continu():
 class Intervalle_net():
     def __init__(self, *args): # Attention pas sur que ca marche le *args
         if len(args) % 2 != 0:
-            #return Erreur("The number of arguments must be even")
+            #preturn Erreur("The number of arguments must be even")
             pass
         self.intervalles_continus = []
         for i in range(0, len(args), 2):
@@ -78,7 +78,7 @@ class Intervalle_net():
         return str(self.intervalles_continus)
     
 
-class Trapèseflou():
+class Trapeseflou():
     def __init__(self, a1, a2, a3, a4, h=1):
         if not (a1 <= a2 <= a3 <= a4):
             pass
@@ -95,17 +95,17 @@ class Trapèseflou():
         else:
             ift = self
             other = other.troncature(self.h)
-        return Trapèseflou(ift.a1 + other.a1, ift.a2 + other.a2, ift.a3 + other.a3, ift.a4 + other.a4, ift.h)
+        return Trapeseflou(ift.a1 + other.a1, ift.a2 + other.a2, ift.a3 + other.a3, ift.a4 + other.a4, ift.h)
 
     def __mul__(self, other):
-        if isinstance(other, Trapèseflou):  # si l'autre élément est lui même un IFT
+        if isinstance(other, Trapeseflou):  # si l'autre élément est lui même un IFT
             ift = other
             if self.h > ift.h:
                 ift1 = self.troncature(ift.h)
             else:
                 ift1 = self
                 ift = ift.troncature(self.h)
-            return Trapèseflou(ift1.a1 * ift.a1, ift1.a2 * ift.a2, ift1.a3 * ift.a3, ift1.a4 * ift.a4, ift1.h)
+            return Trapeseflou(ift1.a1 * ift.a1, ift1.a2 * ift.a2, ift1.a3 * ift.a3, ift1.a4 * ift.a4, ift1.h)
         else:  # si l'autre élément est un scalaire
             alpha = other
             if alpha > 0:
@@ -118,11 +118,11 @@ class Trapèseflou():
                 a2 = alpha * self.a3
                 a3 = alpha * self.a2
                 a4 = alpha * self.a1
-            return Trapèseflou(a1, a2, a3, a4, self.h)
+            return Trapeseflou(a1, a2, a3, a4, self.h)
 
     def __pow__(self, value):
         if value == -1:
-            return Trapèseflou(1 / self.a4, 1 / self.a3, 1 / self.a2, 1 / self.a1, self.h)
+            return Trapeseflou(1 / self.a4, 1 / self.a3, 1 / self.a2, 1 / self.a1, self.h)
         elif value == 1:
             return self
         else:
@@ -133,7 +133,7 @@ class Trapèseflou():
         return self * (other ** -1)
 
     def __neg__(self):
-        return Trapèseflou(-self.a4, -self.a3, -self.a2, -self.a1, self.h)
+        return Trapeseflou(-self.a4, -self.a3, -self.a2, -self.a1, self.h)
 
     def __sub__(self, other):
         return self + (-other)
@@ -149,7 +149,7 @@ class Trapèseflou():
         else:
             a2 = h * (self.a2 - self.a1) / self.h + self.a1
             a3 = - h * (self.a4 - self.a3) / self.h + self.a4
-            return Trapèseflou(self.a1, a2, a3, self.a4, h)
+            return Trapeseflou(self.a1, a2, a3, self.a4, h)
 
     
 
@@ -226,20 +226,20 @@ def parseIFT(chaine):
     if len(arg) == 3:
         if not (arg[0] <= arg[1] <= arg[2]):
             return Erreur("Bornes mal ordonnées")
-        return Trapèseflou(arg[0], arg[1], arg[1], arg[2])
+        return Trapeseflou(arg[0], arg[1], arg[1], arg[2])
     if len(arg) == 4: # IFT ou NFT ? 
         if 0 < arg[3] < 1:
             if not (arg[0] <= arg[1] <= arg[2]):
                 return Erreur("Bornes mal ordonnées")
-            return Trapèseflou(arg[0], arg[1], arg[1], arg[2], h=arg[3])
+            return Trapeseflou(arg[0], arg[1], arg[1], arg[2], h=arg[3])
         else:
             if not (arg[0] <= arg[1] <= arg[2] <= arg[3]):
                 return Erreur("Bornes mal ordonnées")
-            return Trapèseflou(arg[0], arg[1], arg[2], arg[3])
+            return Trapeseflou(arg[0], arg[1], arg[2], arg[3])
     if len(arg) == 5:
         if not (arg[0] < arg[1] < arg[2] < arg[3]):
             return Erreur("Bornes mal ordonnées")
-        return Trapèseflou(arg[0], arg[1], arg[2], arg[3],h = arg[4])
+        return Trapeseflou(arg[0], arg[1], arg[2], arg[3],h = arg[4])
     return Erreur("Pas le bon nombre de paramètres")
 
 
@@ -258,7 +258,7 @@ def mul(a,b) :
         return a
     elif type(b) == Erreur :
         return b
-    return a*b
+    return a.__mul__(b)
 
 def add(a,b) : 
     if type(a) == Erreur :
@@ -272,14 +272,14 @@ def sub(a,b) :
         return a
     elif type(b) == Erreur :
         return b
-    return a-b
+    return a.__sub__(b)
 
 def div(a,b) :
     if type(a) == Erreur :
         return a
     elif type(b) == Erreur :
         return b
-    return a/b
+    return a.__truediv__(b)
 
 def tronc(a,b) :
     if type(a) == Erreur :

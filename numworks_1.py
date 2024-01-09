@@ -580,7 +580,7 @@ class class_liste_principale(class_grid) :
         bouton = self.rows[index][1]
 
         if type(bouton.resultat) == Erreur  : 
-            return Erreur("Le calcul " + id + "à revoyé une erreur")
+            return Erreur("id" + " à renvoyé ERR")
         elif bouton.resultat is None : 
             return Erreur("bouton vide")
         return bouton.resultat
