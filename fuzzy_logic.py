@@ -76,8 +76,64 @@ class Intervalle_net():
     
     def __str__(self) -> str:
         return str(self.intervalles_continus)
-    
 
+
+class UnionIFT():
+    def __init__(self, IFTS, Tco=max):
+        self.IFTS = IFTS
+        self.Tco = Tco
+    def possibilite(self,other):
+        if isinstance(other, UnionIFT):
+            pos = 0
+            for IFT1 in self.IFTS:
+                pos = max(pos, IFT1.possibilite(other))
+            return pos
+        pos = 0
+        for IFT in self.IFTS:
+            pos = max(pos,IFT.possibilite(other))
+        return pos
+
+    def valeur(self, x):
+        val = 0
+        for ift in self.IFTS:
+            val = self.Tco(ift.valeur(x), val)
+        return val
+class InterIFT():
+    def __init__(self, IFTS, Tno=min):
+        self.IFTS = IFTS
+        self.Tno = Tno
+    def valeur(self, x):
+        val = 1
+        for ift in self.IFTS:
+            val = self.Tno(ift.valeur(x), val)
+        return val
+
+def line(p1, p2):
+    A = (p1[1] - p2[1])
+    B = (p2[0] - p1[0])
+    C = (p1[0]*p2[1] - p2[0]*p1[1])
+    x1,y1 = p1
+    x2, y2 = p2
+    return A, B, -C, x1,y1,x2,y2
+
+
+
+def intersection(L1, L2):
+    D  = L1[0] * L2[1] - L1[1] * L2[0]
+    Dx = L1[2] * L2[1] - L1[1] * L2[2]
+    Dy = L1[0] * L2[2] - L1[2] * L2[0]
+    x1, y1, x2, y2 = L1[3:]
+    x3, y3, x4, y4 = L2[3:]
+    xmin = max(min(x1,x2),min(x3,x4))
+    xmax = min(max(x1,x2),max(x3,x4))
+    if D != 0:
+        x = Dx / D
+        y = Dy / D
+        if x < xmin or x > xmax:
+            return None
+        return x,y
+    else:
+        return None
 class Trapeseflou():
     def __init__(self, a1, a2, a3, a4, h=1):
         if not (a1 <= a2 <= a3 <= a4):
@@ -88,6 +144,22 @@ class Trapeseflou():
         self.a3 = a3
         self.a4 = a4
         self.h = h
+        self.lines = [line((self.a1,0), (self.a2, self.h)), line((self.a2, self.h), (self.a3, self.h)), line((self.a3, self.h),(self.a4, 0))]
+
+    def possibilite(self, other):
+        if isinstance(other, UnionIFT):
+            return other.possibilite(self)
+        intersections = []
+        for l1 in self.lines:
+            for l2 in other.lines:
+                pt = intersection(l1, l2)
+                if pt != None:
+                    intersections.append(pt)
+        if len(intersections) == 0:
+            if (self.a1 >= other.a1 and self.a4 <= other.a4) or (other.a1 >= self.a1 and other.a4 <= self.a4):
+                return min(self.h, other.h)
+            return 0
+        return max([pts[1] for pts in intersections])
 
     def __add__(self, other):
         if self.h > other.h:
@@ -295,3 +367,4 @@ def isnumeric(chaine):
         return True
     except : 
         return False
+
