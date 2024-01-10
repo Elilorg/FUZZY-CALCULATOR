@@ -98,6 +98,16 @@ class UnionIFT():
         for ift in self.IFTS:
             val = self.Tco(ift.valeur(x), val)
         return val
+
+    def alpha_coupe(self, alpha):
+        coupes = [IFT.alpha_coupe(alpha) for IFT in self.IFTS if IFT.alpha_coupe !=None]
+        coupes = [(i.a1, i.a2) for i in coupes]
+        if len(coupes) > 0:
+            x,y = min([i[0] for i in coupes]), max([i[1] for i in coupes])
+            return Intervalle_net_continu(x,y)
+        else:
+            return None
+
 class InterIFT():
     def __init__(self, IFTS, Tno=min):
         self.IFTS = IFTS
@@ -107,6 +117,14 @@ class InterIFT():
         for ift in self.IFTS:
             val = self.Tno(ift.valeur(x), val)
         return val
+    def alpha_coupe(self, alpha):
+        coupes = [IFT.alpha_coupe(alpha) for IFT in self.IFTS if IFT.alpha_coupe !=None]
+        coupes = [(i.a1, i.a2) for i in coupes]
+        if len(coupes) > 0:
+            x,y = max([i[0] for i in coupes]), min([i[1] for i in coupes])
+            return Intervalle_net_continu(x,y)
+        else:
+            return None
 
 def line(p1, p2):
     A = (p1[1] - p2[1])
