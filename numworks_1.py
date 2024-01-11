@@ -33,6 +33,8 @@ KEY_TO_CHAR = {
             KEY_MINUS : "-",
             KEY_MULTIPLICATION : "*",
             KEY_DIVISION : "/",
+            KEY_ALPHA : "=",
+    #rajouter les touches
         }
 ### BOUTONS
 
@@ -248,9 +250,8 @@ class class_bouton_calcul(classtextinput) :
 
     def valeur(self, ifts, alpha):
         dico = {}
-        alpha = convert_to_float(alpha)
-        for ift in [ift for ift in ifts.split(" ") if ift != None]:
-            dico[ift] = self.grid.get_result_by_id(ift).valeur(alpha)
+        for ift in [ift for ift in ifts.split(".") if ift != None]:
+            dico[ift] = round(self.grid.get_result_by_id(ift).valeur(alpha),3)
         return dico
     def Tnorme(self, a,b, tno):
         if isinstance(a, Erreur):
@@ -660,7 +661,7 @@ class class_interface() :
 
         self.text_mode_actions = {
             KEY_BACKSPACE : lambda : self.text_focused_button.del_char() ,
-            "lettres" : [KEY_ONE,KEY_TWO,KEY_THREE,KEY_FOUR,KEY_FIVE,KEY_SIX,KEY_SEVEN,KEY_EIGHT,KEY_NINE, KEY_ZERO, KEY_ANS, KEY_DOT, KEY_SHIFT, KEY_PLUS, KEY_DIVISION, KEY_MINUS, KEY_MULTIPLICATION]
+            "lettres" : [KEY_ONE,KEY_TWO,KEY_THREE,KEY_FOUR,KEY_FIVE,KEY_SIX,KEY_SEVEN,KEY_EIGHT,KEY_NINE, KEY_ZERO, KEY_ANS, KEY_DOT, KEY_SHIFT, KEY_PLUS, KEY_DIVISION, KEY_MINUS, KEY_MULTIPLICATION, KEY_ALPHA ] #ici aussi
         }
 
         self.action_rate_constant = 0.15
