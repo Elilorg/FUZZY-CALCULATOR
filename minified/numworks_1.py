@@ -17,9 +17,8 @@ green=0,255,0
 g=green
 KEY_TO_CHAR={KEY_ONE:'1',KEY_TWO:'2',KEY_THREE:'3',KEY_FOUR:'4',KEY_FIVE:'5',KEY_SIX:'6',KEY_SEVEN:'7',KEY_EIGHT:'8',KEY_NINE:'9',KEY_ZERO:'0',KEY_ANS:' ',KEY_DOT:'.',KEY_SHIFT:' ',KEY_PLUS:'+',KEY_MINUS:'-',KEY_MULTIPLICATION:'*',KEY_DIVISION:'/'}
 class class_bouton:
-	'\n   \n    '
 	def __init__(self,text,color,x,y,focused=_B,action=_A):
-		"\n        les x sont les colonnes ou le bouton s'étend dans la grid\n        les y sont les lignes ou le bouton s'étend dans la grid\n        x et y doivent etre des listes\n\n        ";self.text=text;self.color=color;self.focused_color=color[0]+40,color[1]+40,color[2]+40;self.focused=focused
+		self.text=text;self.color=color;self.focused_color=color[0]+40,color[1]+40,color[2]+40;self.focused=focused
 		if action is not _A:self.action=action
 		self.x=x;self.y=y;self.height=_A;self.width=_A;self.coordinates=_A;self.grid_coordinates=[self.x[0],self.y[0]];self.grid=_A
 	def draw(self,color=_A):
@@ -36,7 +35,6 @@ class class_bouton:
 	def __str__(self):return self.text+' '+str(self.grid_coordinates)
 	def changer_coordonnees(self,x=0,y=0):self.grid_coordinates[0]+=x;self.grid_coordinates[1]+=y;self.x=list(map(lambda x_orginal:x_orginal+x,self.x));self.y=list(map(lambda y_orginal:y_orginal+y,self.y));self.coordinates=_A
 class classtextinput(class_bouton):
-	' \n    Une extention de la classe bouton. Elle a quelques particularitée en plus. \n    - Sa touche "action" permet de faire entrer l\'interface en mode texte et donc de changer le texte\n    - En mode texte, l\'interface utilise ces fonctions : \n        - del_char permet de supprimer le dernier caractère \n        - add_char permet d\'ajouter un caractère\n        - enter_text_mode est appellé quand l\'interface entre en text-mode, et permet d\'effacer le texte par défaut\n        - exit text_mode est appellé quand l\'interface quitte le mode texte et permet de remettre le texte par défaut si on a rien écrit\n    '
 	def __init__(self,text,color,x,y,focused=_B,action=_A):action=self.toggle_text_mode;super().__init__(text,color,x,y,focused,action);self.text_mode=_B;self.text_mode_color=230,230,230
 	def draw(self):
 		if self.text_mode:super().draw(self.text_mode_color)
@@ -55,7 +53,6 @@ class classtextinput(class_bouton):
 		if self.text=='':self.text=_A
 		self.draw()
 	def toggle_text_mode(self):
-		"\n        Ce fonctionnement est basé sur l'idée que c'est bien ce bouton qui est le text_focused_button quand toggle_text_mode est appelé\n        Et donc que c'est bien ce bouton qui va entrer ou sortir du mode texte, sinon on pourrais avoir plusieurs boutons en mode texte.\n        "
 		if self.text_mode:deactivate_text_mode()
 		else:activate_text_mode()
 class boutonvaleur(class_bouton):
@@ -79,7 +76,7 @@ class class_bouton_calcul(classtextinput):
 	def add_char(self,char):self.text+=char;self.draw()
 	def ajouter_resultat(self,type_resultat):self.type_resultat=type_resultat;self.draw()
 	def get_value(self,chaine):
-		"\n        si la chaine est un nb, on le converti en trapèse flou mais net ducoup. \n        Sinon aller chercher avec l'id\n        Ca ca va dans l'interface de la calculatrice\n        ";check_num=chaine.replace(',','').replace('.','')
+		check_num=chaine.replace(',','').replace('.','')
 		if isnumeric(check_num):
 			nb=convert_to_float(chaine)
 			if type(nb)==Erreur:return nb
@@ -93,9 +90,8 @@ class class_bouton_calcul(classtextinput):
 		if'/'in chaine:a,b=self.split_chaine(chaine,'/');return div(a,b)
 		if A in chaine:return tronc(self.calcul(chaine.split(A)[0]),convert_to_float(chaine.split(A)[1]))
 		return self.get_value(chaine)
-	def split_chaine(self,chaine,symbole):" \n        cette focntion fait partie de la recurtion de calcul. \n        elle permet de diviser une chaine en deux parties\n        et de lancer le calcul sur chacune d'elles\n        ";splited=chaine.split(symbole);return self.calcul(splited[0]),self.calcul(''.join(splited[1:]))
+	def split_chaine(self,chaine,symbole):splited=chaine.split(symbole);return self.calcul(splited[0]),self.calcul(''.join(splited[1:]))
 	def evaluate(self,chaine):
-		'\n        Le parseur\n        '
 		if chaine=='':return
 		chaine_check=chaine.replace(' ','').replace(',','').replace('.','')
 		if isnumeric(chaine_check):return parseIFT(chaine)
@@ -103,16 +99,14 @@ class class_bouton_calcul(classtextinput):
 			try:return self.calcul(chaine.replace(' ',''))
 			except Exception as e:raise e;return Erreur('Le calcul a échoué')
 class class_grid:
-	'\n    La grille contient l\'ensemble des boutons. Ici, chaque élément est appellé une "cell".\n    On accède au contenu de la grille avec la methode get_cell(x, y)\n    ATTENTION : pour accéder au contenu des cell avec la propriété __grid, il faudra utiliser :  self.__grid[y][x]\n    Les méthode suivantes sont aussi disponibles : \n    - get_focused_cell() : renvoie le contenu de la cellule en cours de selection\n    - focus_cell(button : Bouton) : déselectionne la cellule en cours de selection, puis selectionne le bouton qu\'on vien de lui passer.\n    - __getitem__ permet de récupérer les contenus des cellules avec grid[y][x] ou grid est l\'objet grid et non la propriété __grid. Cela permet une interface plus simple\n    - __setitem__ permet de modifier les contenus des cellules avec grid[y][x] \n    - travel_x() permet de focus la cellule directement a droite ou a gauche de la cellule en cours de selection\n    - travel_y() permet de focus la cellule directement en haut ou en bas de la cellule en cours de selection\n\n    Les paramètre suivants sont disponibles lors de la création de la grille \n    - offset_x : position de la grille sur l\'axe x (coin supérieur gauche)\n    - offset_y : position de la grille sur l\'axe y (coin supérieur gauche)\n    - width : largeur de la grille\n    - height : hauteur de la grille\n    - x_div : nb de divisions sur l\'axe x\n    - y_div : nb de divisions sur l\'axe y\n\n    Les valeurs par défaut sont celles de la grille principale\n\n    '
-	def __init__(self,offset_x=0,offset_y=0,width=width_constant,height=height_constant,x_div=4,y_div=5):'\n        On initialise la grille avec sa hauteur et sa largeur\n        ';self.offset_x=offset_x;self.offset_y=offset_y;self.x_div=x_div;self.y_div=y_div;self.width=self.x_div;self.height=self.y_div;self.cell_w=width//self.x_div;self.cell_h=height//self.y_div;self.focused=[0,0];self.__grid=[[_A for j in range(self.width)]for i in range(self.height)]
+	def __init__(self,offset_x=0,offset_y=0,width=width_constant,height=height_constant,x_div=4,y_div=5):self.offset_x=offset_x;self.offset_y=offset_y;self.x_div=x_div;self.y_div=y_div;self.width=self.x_div;self.height=self.y_div;self.cell_w=width//self.x_div;self.cell_h=height//self.y_div;self.focused=[0,0];self.__grid=[[_A for j in range(self.width)]for i in range(self.height)]
 	def get_cell(self,x,y):
-		'\n        retourne la cellule\n        '
 		if x<0 or x>self.width-1:0
 		if y<0 or y>self.height-1:0
 		return self.__grid[y][x]
-	def updater_coordonees(self,cell):"\n        donne au bouton ces veritables coordonées pour qu'il puisse se dessiner au bon endroit sur l'écran\n        ";cell.coordinates=cell.x[0]*self.cell_w+self.offset_x,cell.y[0]*self.cell_h+self.offset_y;cell.height=self.cell_h*len(cell.y);cell.width=self.cell_w*len(cell.x)
+	def updater_coordonees(self,cell):cell.coordinates=cell.x[0]*self.cell_w+self.offset_x,cell.y[0]*self.cell_h+self.offset_y;cell.height=self.cell_h*len(cell.y);cell.width=self.cell_w*len(cell.x)
 	def get_focused_cell(self):
-		'\n        retourne la cellule focused. Celle ci ne devrait pas etre nulle. \n        ';cell_content=self.__grid[self.focused[1]][self.focused[0]]
+		cell_content=self.__grid[self.focused[1]][self.focused[0]]
 		if cell_content is _A:print('Cell',{self.focused},'is empty');print(self.__grid);return
 		return cell_content
 	def focus_cell(self,cell):
@@ -123,7 +117,7 @@ class class_grid:
 	def __getitem__(self,index):return self.__grid[index]
 	def __setitem__(self,index,value):self.__grid[index]=value
 	def travel_x(self,i):
-		"\n        n'admet que 1 et -1\n        ";x,y=self.focused
+		x,y=self.focused
 		if i==1:
 			for cell in self.__grid[y][x+1:]:
 				if cell is not _A:self.focus_cell(cell);return
@@ -132,7 +126,7 @@ class class_grid:
 				if cell is not _A:self.focus_cell(cell);return
 			return
 	def travel_y(self,i):
-		"\n        On parcour les lignes pour trouver la ligne au dessus ou au dessou qui renvoie\n        n'admet que 1 et -1 \n        ";x,y=self.focused
+		x,y=self.focused
 		if i==1:
 			for list in self.__grid[y+1:]:
 				if list[x]is not _A:self.focus_cell(list[x]);return
@@ -172,21 +166,21 @@ class class_liste_principale(class_grid):
 		for i in range(self.y_div):self.append_list()
 		self.rows[3][1].resultat='Heelo world'
 	def move_up(self,cell):
-		'\n        bouge un bouton de 1 vers le haut\n        ATTENTION : elle écrase la cellule vers laquelle le bouton est déplacé\n        ';x,y=cell.grid_coordinates
+		x,y=cell.grid_coordinates
 		if self.affichable(cell):self[y][x]=_A
 		cell.changer_coordonnees(y=-1)
 		if self.affichable(cell):self[y-1][x]=cell;cell.draw()
 	def move_down(self,cell):
-		'\n        bouge un bouton de 1 vers le bas. \n        ATTENTION : elle écrase la cellule vers la quelle le bouton est déplacé\n        ';x,y=cell.grid_coordinates
+		x,y=cell.grid_coordinates
 		if self.affichable(cell):self[y][x]=_A
 		cell.changer_coordonnees(y=1)
 		if self.affichable(cell):self[y+1][x]=cell;cell.draw()
 	def go_down(self):
-		'\n        fait descendre tout les boutons\n        ';self.get_focused_cell().unfocus()
+		self.get_focused_cell().unfocus()
 		for i in self.rows[::-1]:self.move_down(i[0]);self.move_down(i[1])
 		x,y=self.focused;print(x,y);self.focus_cell(self[y][x])
 	def go_up(self):
-		'\n        fait monter tout les boutons\n        ';self.get_focused_cell().unfocus()
+		self.get_focused_cell().unfocus()
 		for i in self.rows:self.move_up(i[0]);self.move_up(i[1])
 		x,y=self.focused;print(x,y);self.focus_cell(self[y][x])
 	def append_list(self):
@@ -203,13 +197,13 @@ class class_liste_principale(class_grid):
 			print('GO UP');self.go_up()
 		else:super().travel_y(i)
 	def get_result_by_id(self,id):
-		'\n        Cette fonction fait la supposition que la liste est composée des id suivantes : \n        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z\n        A1, A2, A3, A4 , etc...\n        '
 		if type(id)!=str or len(id)==0 or len(id)>2:return Erreur(str(id)+' invalide id')
-		print(self.ids);index=self.ids.index(id[0])
+		print(id);index=self.ids.index(id[0])
 		if len(id)>1:
 			try:index+=26*int(id[1])-1
 			except:return Erreur('id invalide')
 			index+=26*int(id[1])
+		if index>=len(self.rows):return Erreur(str(id)+" n'est pas encore créé")
 		bouton=self.rows[index][1]
 		if type(bouton.resultat)==Erreur:return Erreur('id'+' à renvoyé ERR')
 		elif bouton.resultat is _A:return Erreur('bouton vide')
