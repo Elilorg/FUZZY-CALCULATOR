@@ -53,7 +53,7 @@ L'interface se présente sous la forme d'une grille, avec à gauche les boutons 
 1. Le mode texte : 
     - On l'active en appuyant sur la touche ```EXE``` en étant sur un bouton calcul
     - On peut ensuite se déplacer du mode texte et on restera en mode texte sur la meme case 
-    - On peut alors entrer des nombres, des plus. en utilisant les boutons de la colonne de gauche, on peut réutiliser des résultats précédents. 
+    - On peut alors entrer des nombres. En utilisant les boutons de la colonne de gauche, on peut réutiliser des résultats précédents. 
     - pour terminer le calcul, il faut sortir du mode texte, en réappuyant sur le bouton calcul en question avec ```EXE```, ou entrer en mode texte sur un autre bouton de calcul, de la meme manière. 
 2. Ajouter des intervalles flous
     - Pour ajouter un intervalle net : inscrire les deux nombre séparés par un espace (touche ```ANS```) (Ex : ```13 20.5```)
