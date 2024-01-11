@@ -745,6 +745,7 @@ def change_grid(grid) :
     interface.switch_grid(grid)
 
 main_list = class_liste_principale()
+main_list.focus_cell(main_list.get_cell(0,0))
 menu  = menu_secondaire()
 interface = class_interface(main_list, menu)
 interface.main_loop()
