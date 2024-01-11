@@ -252,15 +252,21 @@ class class_bouton_calcul(classtextinput) :
         for ift in [ift for ift in ifts.split(" ") if ift != None]:
             dico[ift] = self.grid.get_result_by_id(ift).valeur(alpha)
         return dico
-    def Tnorme(self, chaine, tno):
-        a,b = self.split_chaine(chaine, tno)
+    def Tnorme(self, a,b, tno):
+        if isinstance(a, Erreur):
+            return a
+        if isinstance(b, Erreur):
+            return b
         if isinstance(a, Scalaire) and isinstance(b, Scalaire):
             return Tnormes[tno](a.a1,b.a1)
         return InterIFT([a,b], Tnormes[tno])
 
 
-    def Tconorme(self, chaine, tco):
-        a,b = self.split_chaine(chaine, tco)
+    def Tconorme(self, a,b, tco):
+        if isinstance(a, Erreur):
+            return a
+        if isinstance(b, Erreur):
+            return b
         if isinstance(a, Scalaire) and isinstance(b, Scalaire):
             return Tconormes[tco](a.a1,b.a1)
         return UnionIFT([a,b], Tconormes[tco])
@@ -286,10 +292,12 @@ class class_bouton_calcul(classtextinput) :
             return self.valeur(chaine.split("=")[0], convert_to_float(chaine.split("=")[1]))
         for tno in Tnormes.keys():
             if tno in chaine:
-                return self.Tnorme(chaine, tno)
+                a, b = self.split_chaine(chaine, tno)
+                return self.Tnorme(a,b, tno)
         for tco in Tconormes.keys():
             if tco in chaine:
-                return self.Tconorme(chaine, tco)
+                a, b = self.split_chaine(chaine, tco)
+                return self.Tnorme(a, b, tco)
 
 
         return self.get_value(chaine)
