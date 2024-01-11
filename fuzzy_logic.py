@@ -79,24 +79,24 @@ class Intervalle_net():
 
 
 class UnionIFT():
-    def __init__(self, IFTS, Tco=max):
+    def __init__(self, IFTS, Tconorme=max):
         self.IFTS = IFTS
-        self.Tco = Tco
-    def possibilite(self,other):
+        self.Tconorme = Tconorme
+    def possibilite(self,other, Tnorme=min):
         if isinstance(other, UnionIFT):
             pos = 0
             for IFT1 in self.IFTS:
-                pos = max(pos, IFT1.possibilite(other))
+                pos = max(pos, IFT1.possibilite(other, Tnorme))
             return pos
         pos = 0
         for IFT in self.IFTS:
-            pos = max(pos,IFT.possibilite(other))
+            pos = max(pos,IFT.possibilite(other, Tnorme))
         return pos
 
     def valeur(self, x):
         val = 0
         for ift in self.IFTS:
-            val = self.Tco(ift.valeur(x), val)
+            val = self.Tconorme(ift.valeur(x), val)
         return val
 
     def alpha_coupe(self, alpha):
@@ -109,13 +109,13 @@ class UnionIFT():
             return None
 
 class InterIFT():
-    def __init__(self, IFTS, Tno=min):
+    def __init__(self, IFTS, Tnorme=min):
         self.IFTS = IFTS
-        self.Tno = Tno
+        self.Tnorme = Tnorme
     def valeur(self, x):
         val = 1
         for ift in self.IFTS:
-            val = self.Tno(ift.valeur(x), val)
+            val = self.Tnorme(ift.valeur(x), val)
         return val
     def alpha_coupe(self, alpha):
         coupes = [IFT.alpha_coupe(alpha) for IFT in self.IFTS if IFT.alpha_coupe !=None]
@@ -164,20 +164,28 @@ class Trapeseflou():
         self.h = h
         self.lines = [line((self.a1,0), (self.a2, self.h)), line((self.a2, self.h), (self.a3, self.h)), line((self.a3, self.h),(self.a4, 0))]
 
-    def possibilite(self, other):
+    def possibilite(self, other, Tnorme = min):
         if isinstance(other, UnionIFT):
-            return other.possibilite(self)
+            return other.possibilite(self, Tnorme)
         intersections = []
         for l1 in self.lines:
             for l2 in other.lines:
                 pt = intersection(l1, l2)
                 if pt != None:
                     intersections.append(pt)
+        if self.a2 >= other.a1 and self.a2 <= other.a4:
+            intersections.append((self.a2, min(self.h,other.h)))
+        if self.a3 >= other.a1 and self.a3 <= other.a4:
+            intersections.append((self.a3, min(self.h,other.h)))
+        if other.a2 >= self.a1 and other.a2 <= self.a4:
+            intersections.append((other.a2, min(self.h,other.h)))
+        if other.a3 >= self.a1 and other.a3 <= self.a4:
+            intersections.append((other.a3, min(self.h,other.h)))
+
         if len(intersections) == 0:
-            if (self.a1 >= other.a1 and self.a4 <= other.a4) or (other.a1 >= self.a1 and other.a4 <= self.a4):
-                return min(self.h, other.h)
             return 0
-        return max([pts[1] for pts in intersections])
+        x = [pt[0] for pt in intersections if max([pts[1] for pts in intersections])][0]
+        return Tnorme(self.valeur(x),other.valeur(x))
 
     def __add__(self, other):
         if self.h > other.h:
