@@ -41,8 +41,8 @@ Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionn
 - nombres -> les nombres 
 - espace -> ```Ans```
 - +, *, -, / -> meme touches
-- Entrer dans le mode texte -> EXE
-- En mode, texte, ajouter un nom de variable -> aller sur le bouton (ex : ```A=```) et EXE. 
+- Entrer dans le mode texte -> ````EXE````
+- En mode, texte, ajouter un nom de variable -> aller sur le bouton (ex : ```A=```) et ```EXE```. 
 
 Pas encore ajouté : 
 t-troncature, alpha coupe. Déjà dans le fichier math mais pas l'interface
