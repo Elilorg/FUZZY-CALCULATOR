@@ -26,6 +26,7 @@ Pour actualiser le code installé par les utilisateur, il faut run ```minify.sh`
 
 ## Pour tester sur la numworks
 
+### Installation
 Nous n'avons pas encore tester cette dernière vertion de notre programme sur la numworks. 
 Pour l'installer, vous devez mettre les 2 fichiers python du dossier ```minified``` sur vortre calculatrice : 
 ```fuzzy_logic.py``` et ```numworks_1.py```. La vertion que vous devez installer se trouve dans le dossier apellé ```minified```. C'est bien les fichiers de ce dossier que vous devez installer, sans quoi le script ne marchera pas car il prend trop de place sur la calculatrice. 
@@ -35,6 +36,16 @@ Cliquer sur "Ajouter un script", et faire de meme pour l'autre fichier python. A
 Maintenant qe vos scripts sont sur le site, vous pouvez cliquer sur "Envoyer sur ma calculatrice". 
 
 Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionner.
+
+### Commandes de la calculatrice : 
+- nombres -> les nombres 
+- espace -> ```Ans```
+- +, *, -, / -> meme touches
+- Entrer dans le mode texte -> EXE
+- En mode, texte, ajouter un nom de variable -> aller sur le bouton (ex : ```A=```) et EXE. 
+
+Pas encore ajouté : 
+t-troncature, alpha coupe. Déjà dans le fichier math mais pas l'interface
 
 
 # A faire 
