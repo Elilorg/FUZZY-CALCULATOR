@@ -1,5 +1,33 @@
 import math
 import random
+# Tnormes
+def Tp(a,b):
+    return a*b
+def Tpp(a,b):
+    if b == 1:
+        return a
+    if a == 1:
+        return b
+    return 0
+def Tl(a,b):
+    return max(0, a+b-1)
+Tnormes = {"tp":Tp,"tl":Tl, "min":min, "tpp":Tpp}
+# Tconormes
+def cTp(a,b):
+    return a+b-a*b
+def cTpg(a,b):
+    if a == 0:
+        return b
+    if b == 0:
+        return a
+    return 1
+def cTl(a,b):
+    return min(1, a+b)
+
+Tconormes = {"ctp":cTp, "ctl": cTl, "max":max,"ctpg":cTpg}
+
+
+
 
 class Erreur():
     def __init__(self, message) :
@@ -107,6 +135,9 @@ class UnionIFT():
             return Intervalle_net_continu(x,y)
         else:
             return None
+    def __str__(self):
+        tco = [tconorme for tconorme in Tconormes.keys() if Tconormes[tconorme] == self.Tconorme][0]
+        return tco + " - Union de " + [str(ift) for ift in self.IFTS]
 
 class InterIFT():
     def __init__(self, IFTS, Tno=min):
@@ -125,6 +156,10 @@ class InterIFT():
             return Intervalle_net_continu(x,y)
         else:
             return None
+
+    def __str__(self):
+        tno = [tnorme for tnorme in Tnormes.keys() if Tnormes[tnorme] == self.Tnorme][0]
+        return tno + " - Intersection de " + [str(ift) for ift in self.IFTS]
 
 def line(p1, p2):
     A = (p1[1] - p2[1])
@@ -283,7 +318,7 @@ class Trapeseflou():
 
 def convert_to_float(nombre):
     """
-    conertit un nb en float, sans erreurs
+    convertit un nb en float, sans erreurs
     """
     print(nombre)
     if "," in nombre or "." in nombre:
@@ -299,7 +334,9 @@ def convert_to_float(nombre):
         return Erreur(str(nombre) + " not float")
 
     return result
-
+class Scalaire(Trapeseflou):
+    def __init__(self, nb, h):
+        super.__init__(nb,nb,nb,nb,h)
 def parseIFT(chaine):
     """
     crée un IFT à partir d'une chaine str
@@ -377,6 +414,15 @@ def tronc(a,b) :
     elif type(b) == Erreur :
         return b
     return a.troncature(b)
+def pos(a, b):
+    if type(a) == Erreur :
+        return a
+    elif type(b) == Erreur :
+        return b
+    try:
+        return a.possibilite(b)
+    except:
+        return Erreur("Erreur dans la possibilité")
 
 
 def isnumeric(chaine):

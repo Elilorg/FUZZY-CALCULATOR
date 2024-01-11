@@ -239,12 +239,30 @@ class class_bouton_calcul(classtextinput) :
             if type(nb) == Erreur : 
                 return nb
             
-            return Trapeseflou(nb,nb,nb,nb,1)
+            return Scalaire(nb,1)
 
         else : 
             return self.grid.get_result_by_id(chaine)
         #return Erreur(chaine + " n'est pas un nb valide")
 
+    def valeur(self, ifts, alpha):
+        dico = {}
+        alpha = convert_to_float(alpha)
+        for ift in [ift for ift in ifts.split(" ") if ift != None]:
+            dico[ift] = self.grid.get_result_by_id(ift).valeur(alpha)
+        return dico
+    def Tnorme(self, chaine, tno):
+        a,b = self.split_chaine(chaine, tno)
+        if isinstance(a, Scalaire) and isinstance(b, Scalaire):
+            return Tnormes[tno](a.a1,b.a1)
+        return InterIFT([a,b], Tnormes[tno])
+
+
+    def Tconorme(self, chaine, tco):
+        a,b = self.split_chaine(chaine, tco)
+        if isinstance(a, Scalaire) and isinstance(b, Scalaire):
+            return Tconormes[tco](a.a1,b.a1)
+        return UnionIFT([a,b], Tconormes[tco])
 
     def calcul(self, chaine): # Donc ca aussi ca va dans l'interface 
         if "+" in chaine:
@@ -259,9 +277,23 @@ class class_bouton_calcul(classtextinput) :
         if "/" in chaine:
             a, b = self.split_chaine(chaine, "/")
             return div(a,b)
-        if "#" in chaine:
-            return tronc(self.calcul(chaine.split("#")[0]), convert_to_float(chaine.split("#")[1]))
+        if "tr" in chaine:
+            return tronc(self.calcul(chaine.split("tr")[0]), convert_to_float(chaine.split("tr")[1]))
+        if "pos" in chaine:
+            return pos(self.calcul(chaine.split("pos")[0]), self.calcul(chaine.split("pos")[1]))
+        if "=" in chaine:
+            return self.valeur(chaine.split("=")[0], convert_to_float(chaine.split("=")[1]))
+        for tno in Tnormes.keys():
+            if tno in chaine:
+                return self.Tnorme(chaine, tno)
+        for tco in Tconormes.keys():
+            if tco in chaine:
+                return self.Tconorme(chaine, tco)
+
+
         return self.get_value(chaine)
+
+
     def split_chaine(self, chaine, symbole):
         """ 
         cette focntion fait partie de la recurtion de calcul. 
