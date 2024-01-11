@@ -47,6 +47,25 @@ Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionn
 Pas encore ajouté : 
 t-troncature, alpha coupe. Déjà dans le fichier math mais pas l'interface
 
+### Comment l'utiliser 
+
+L'interface se présente sous la forme d'une grille, avec à gauche les boutons dit "valeurs" et à droite, les grand boutons dit "calculs". (appelés CALC par défaut). 
+1. Le mode texte : 
+    - On l'active en appuyant sur la touche ```EXE``` en étant sur un bouton calcul
+    - On peut ensuite se déplacer du mode texte et on restera en mode texte sur la meme case 
+    - On peut alors entrer des nombres, des plus. en utilisant les boutons de la colonne de gauche, on peut réutiliser des résultats précédents. 
+    - pour terminer le calcul, il faut sortir du mode texte, en réappuyant sur le bouton calcul en question avec ```EXE```, ou entrer en mode texte sur un autre bouton de calcul, de la meme manière. 
+2. Ajouter des intervalles flous
+    - Pour ajouter un intervalle net : inscrire les deux nombre séparés par un espace (touche ```ANS```) (Ex : ```13 20.5```)
+    - pour ajouter un NFT, entrer trois valeurs séparées par des espaces (Ex : ```1 2 3```) 
+        - si vous voulez entrer un NFT avec une hauteur != de 1, bous pouvez ajouter un nombre, inférieure à 0 à la fin, toujour séparées par un espace  (EX : ```1 2 3 0.6```)
+    - pour ajouter un IFT, entrer 4 valeurs séparées par des espaces (Ex : ```1 2.5 3.5 4```)
+        - pour un IFT de hauteur != 1, ajouter une valeur < à 1, séparée par un espace (Ex : ```1 2.5 3.5 4 0.2```)
+    - **Attention !** Les nombre à virgule s'écrivent avec le ```.``` 
+
+3. Faire des calculs
+    - vous pouvez utiliser les opérateurs ```+```, ```-```, ```*```, ```/```
+    - Et ce entre les intervalles flous et aussi entre un espace flou et un scalaire. 
 
 # A faire 
 
