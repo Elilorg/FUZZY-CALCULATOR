@@ -90,7 +90,7 @@ class class_bouton :
             print("ERREUR", self.text, "n'est pas encore ajouté à une grille !")
         self.grid.updater_coordonees(self)
     
-    def focus(self) : 
+    def focus(self) :
         print(self.text,"at" ,self.grid_coordinates, "is focused")
         self.focused = True
         self.draw()
@@ -209,6 +209,7 @@ class class_bouton_calcul(classtextinput) :
         draw_string(result_affiche, self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
     
     def exit_text_mode(self):
+        print(self.text)
         self.resultat = self.evaluate(self.text)
         super().exit_text_mode()
         self.draw()  # Oui, risque de redraw alors qu'on a déja draw parce que texte vide. A voir comment ca se fix
@@ -241,7 +242,7 @@ class class_bouton_calcul(classtextinput) :
             
             return Scalaire(nb,1)
 
-        else : 
+        else :
             return self.grid.get_result_by_id(chaine)
         #return Erreur(chaine + " n'est pas un nb valide")
 
@@ -301,7 +302,7 @@ class class_bouton_calcul(classtextinput) :
         et de lancer le calcul sur chacune d'elles
         """
         splited = chaine.split(symbole)
-        return self.calcul(splited[0]), self.calcul("".join(splited[1:]))
+        return self.calcul(splited[0]), self.calcul(symbole.join(splited[1:]))
 
     def evaluate(self, chaine):
         """

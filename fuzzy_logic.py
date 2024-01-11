@@ -336,7 +336,7 @@ def convert_to_float(nombre):
     return result
 class Scalaire(Trapeseflou):
     def __init__(self, nb, h):
-        super.__init__(nb,nb,nb,nb,h)
+        super().__init__(nb,nb,nb,nb,h)
 def parseIFT(chaine):
     """
     crée un IFT à partir d'une chaine str
