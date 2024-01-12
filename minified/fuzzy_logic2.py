@@ -121,6 +121,7 @@ class Trapeseflou:
 			return Trapeseflou(F,G,H,I,A.h)
 	def __pow__(A,value):
 		B=value
+		if any([A==0 for A in[A.a1,A.a2,A.a3,A.a4]]):return Erreur('Pas de division par 0')
 		if B==-1:return Trapeseflou(1/A.a4,1/A.a3,1/A.a2,1/A.a1,A.h)
 		elif B==1:return A
 		else:return A*A**(B-1)
@@ -144,8 +145,8 @@ class Trapeseflou:
 		if B>0 and B<=A.h:C=(A.a2-A.a1)*(B/A.h)+A.a1;D=-(A.a4-A.a3)*(B/A.h)+A.a4;return Intervalle_net_continu(C,D)
 		else:return
 	def __str__(A):
-		if A.a2==A.a3:return'NFT['+str(A.a1)+_A+str(A.a2)+_A+str(A.a3)+_A+'h='+str(A.h)+']'
-		return'IFT['+str(A.a1)+_A+str(A.a2)+_A+str(A.a3)+_A+str(A.a4)+' h='+str(A.h)+']'
+		if A.a2==A.a3:return'NFT['+str(round(A.a1,3))+_A+str(round(A.a2,3))+_A+str(round(A.a3,3))+_A+'h='+str(round(A.h,3))+']'
+		return'IFT['+str(round(A.a1,3))+_A+str(round(A.a2,3))+_A+str(round(A.a3,3))+_A+str(round(A.a4,3))+' h='+str(round(A.h,3))+']'
 def convert_to_float(nombre):
 	D=' not float';A=nombre;print(A)
 	if','in A or'.'in A:
