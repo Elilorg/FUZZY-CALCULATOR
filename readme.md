@@ -42,7 +42,9 @@ Ceci fait, dans la liste des scripts c'est numworks_1.py qu'il faut séléctionn
 - espace -> ```Ans```
 - +, *, -, / -> meme touches
 - Entrer dans le mode texte -> ````EXE````
-- En mode, texte, ajouter un nom de variable -> aller sur le bouton (ex : ```A=```) et ```EXE```. 
+- En mode, texte, ajouter un nom de variable -> aller sur le bouton (ex : ```A=```) et ```EXE```.
+- troncature : touche racine carrée (écrit le symbole #)
+- possibilité : touche cos (écrit le symbole ```^_v```) 
 
 Pas encore ajouté : 
 t-troncature, alpha coupe. Déjà dans le fichier math mais pas l'interface
