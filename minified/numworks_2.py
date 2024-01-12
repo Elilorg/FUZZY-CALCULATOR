@@ -1,5 +1,5 @@
 _F='lettres'
-_E='v_^'
+_E='^_v'
 _D=True
 _C=' '
 _B=False
@@ -181,9 +181,8 @@ class class_liste_principale(class_grid):
 	def __init__(self):
 		self.rows=[];ids=[]
 		for j in range(10):ids+=[i+str(j)if j!=0 else i for i in'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
-		self.ids=ids;self.remaining_ids=ids.copy();super().__init__(x_div=4,y_div=5)
+		self.ids=ids;self.remaining_ids=ids.copy();super().__init__(x_div=6,y_div=5)
 		for i in range(self.y_div):self.append_list()
-		self.rows[3][1].resultat='Heelo world'
 	def move_up(self,cell):
 		x,y=cell.grid_coordinates
 		if self.affichable(cell):self[y][x]=_A
@@ -207,7 +206,7 @@ class class_liste_principale(class_grid):
 		if len(self.rows)==0:y_pos=0
 		else:y_pos=self.rows[-1][0].grid_coordinates[1]+1
 		if len(self.ids)==0:print('Plus de lettres');return
-		bouton_calcul=class_bouton_calcul(_A,black,[1,2,3],[y_pos]);bouton_valeur=boutonvaleur(self.remaining_ids.pop(0)+' = ',white,[0],[y_pos]);self.add_button(bouton_calcul);self.add_button(bouton_valeur);self.rows.append((bouton_valeur,bouton_calcul))
+		bouton_calcul=class_bouton_calcul(_A,black,[1,2,3,4,5],[y_pos]);bouton_valeur=boutonvaleur(self.remaining_ids.pop(0)+' = ',white,[0],[y_pos]);self.add_button(bouton_calcul);self.add_button(bouton_valeur);self.rows.append((bouton_valeur,bouton_calcul))
 	def travel_y(self,i):
 		y=self.focused[1]
 		if y==0 and i==-1 and self.rows[0][0].grid_coordinates[1]!=0:print('GO DOWN');self.go_down()

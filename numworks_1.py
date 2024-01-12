@@ -34,7 +34,7 @@ KEY_TO_CHAR = {
             KEY_MULTIPLICATION : "*",
             KEY_DIVISION : "/",
             KEY_SQRT : "#",
-            KEY_COSINE : "v_^"
+            KEY_COSINE : "^_v"
         }
 ### BOUTONS
 
@@ -281,8 +281,8 @@ class class_bouton_calcul(classtextinput) :
         if "#" in chaine:
             a, b = self.split_chaine(chaine, "#")
             return tronc(self.calcul(chaine.split("#")[0]), convert_to_float(chaine.split("#")[1]))
-        if "v_^" in chaine:
-            return pos(self.calcul(chaine.split("v_^")[0]), self.calcul(chaine.split("v_^")[1]))
+        if "^_v" in chaine:
+            return pos(self.calcul(chaine.split("^_v")[0]), self.calcul(chaine.split("^_v")[1]))
         if "=" in chaine:
             return self.valeur(chaine.split("=")[0], convert_to_float(chaine.split("=")[1]))
         for tno in Tnormes.keys():
@@ -509,11 +509,10 @@ class class_liste_principale(class_grid) :
         self.ids = ids
         self.remaining_ids = ids.copy()        
 
-        super().__init__(x_div=4, y_div=5)
+        super().__init__(x_div=6, y_div=5)
         for i in range(self.y_div) :
             self.append_list()
         # Ajouter les rows
-        self.rows[3][1].resultat = "Heelo world"
 
     def move_up(self, cell : class_bouton) : 
         """
@@ -575,7 +574,7 @@ class class_liste_principale(class_grid) :
         if len(self.ids) == 0 :
             print("Plus de lettres")
             return
-        bouton_calcul = class_bouton_calcul(None, black, [1, 2, 3], [y_pos])
+        bouton_calcul = class_bouton_calcul(None, black, [1, 2, 3, 4, 5], [y_pos])
         bouton_valeur = boutonvaleur(self.remaining_ids.pop(0) + " = ", white,[0], [y_pos])
         self.add_button(bouton_calcul)
         self.add_button(bouton_valeur)
