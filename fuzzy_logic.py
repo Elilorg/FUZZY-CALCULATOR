@@ -246,6 +246,8 @@ class Trapeseflou():
             return Trapeseflou(a1, a2, a3, a4, self.h)
 
     def __pow__(self, value):
+        if any([value==0 for value in [self.a1, self.a2, self.a3, self.a4]]):
+            return Erreur("Pas de division par 0")
         if value == -1:
             return Trapeseflou(1 / self.a4, 1 / self.a3, 1 / self.a2, 1 / self.a1, self.h)
         elif value == 1:
@@ -305,15 +307,11 @@ class Trapeseflou():
     def __str__(self) -> str:
         
         if self.a2 == self.a3:
-            return "NFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) +" " + "h=" + str(self.h) + "]"  
+            return "NFT[" + str(round(self.a1, 3)) + " " + str(round(self.a2, 3)) + " " + str(round(self.a3, 3)) +" " + "h=" + str(round(self.h, 3)) + "]"  
         
 
-        return  "IFT[" + str(self.a1) + " " + str(self.a2) + " " + str(self.a3) + " " + str(self.a4)+ " h="+ str(self.h)+"]"
+        return  "IFT[" + str(round(self.a1, 3)) + " " + str(round(self.a2, 3)) + " " + str(round(self.a3, 3)) + " " + str(round(self.a4,3))+ " h="+ str(round(self.h, 3))+"]"
 
-
-
-
-    
 
 
 def convert_to_float(nombre):
