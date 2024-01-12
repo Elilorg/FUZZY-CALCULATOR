@@ -33,6 +33,8 @@ KEY_TO_CHAR = {
             KEY_MINUS : "-",
             KEY_MULTIPLICATION : "*",
             KEY_DIVISION : "/",
+            KEY_SQRT : "#",
+            KEY_COSINE : "v_^"
         }
 ### BOUTONS
 
@@ -182,14 +184,6 @@ class boutonvaleur(class_bouton) :
     def action(self) :
         ajouter_lettre(self.char)
     
-class result_type_selector(class_bouton) :
-    def __init__(self, text, color, x:list[int], y : list[int], focused = False, action =  None, type_resultat = "%") :
-        super().__init__(text, color, x, y, focused, action)
-        self.type = type_resultat
-    
-    def action(self) :
-        ajouter_type_resultat(self.type)
-        change_grid(main_list)
 
 
 class class_bouton_calcul(classtextinput) :
@@ -284,10 +278,11 @@ class class_bouton_calcul(classtextinput) :
         if "/" in chaine:
             a, b = self.split_chaine(chaine, "/")
             return div(a,b)
-        if "tr" in chaine:
-            return tronc(self.calcul(chaine.split("tr")[0]), convert_to_float(chaine.split("tr")[1]))
-        if "pos" in chaine:
-            return pos(self.calcul(chaine.split("pos")[0]), self.calcul(chaine.split("pos")[1]))
+        if "#" in chaine:
+            a, b = self.split_chaine(chaine, "#")
+            return tronc(self.calcul(chaine.split("#")[0]), convert_to_float(chaine.split("#")[1]))
+        if "v_^" in chaine:
+            return pos(self.calcul(chaine.split("v_^")[0]), self.calcul(chaine.split("v_^")[1]))
         if "=" in chaine:
             return self.valeur(chaine.split("=")[0], convert_to_float(chaine.split("=")[1]))
         for tno in Tnormes.keys():
@@ -627,23 +622,12 @@ class class_liste_principale(class_grid) :
         return bouton.resultat
     
 
-types = ["INT", "IFT", "NFT"]
-class menu_secondaire(class_grid) : # Le menu secondaire va permettre d'ajouter les types d'intervalles (et quelques fonctions ? Comme T troncature/ elevations, )
-    def __init__(self) : 
-        super().__init__(x_div=4, y_div=5)
-        for i in range(len(types)) :
-            self.add_button(result_type_selector(types[i], black, [0,1, 2, 3], [i], type_resultat=types[i] + "[%]"))
 
-    def travel_x(self, i):
-        if i == -1 : 
-            change_grid(main_list)
-        return super().travel_x(i)
 
 
 class class_interface() : 
-    def __init__(self, grid : class_liste_principale, menu) : 
+    def __init__(self, grid : class_liste_principale) : 
         self.main_grid = grid
-        self.menu = menu
         self.text_mode = False
         self.text_focused_button = None
         self.grid_focused = self.main_grid
@@ -660,7 +644,7 @@ class class_interface() :
 
         self.text_mode_actions = {
             KEY_BACKSPACE : lambda : self.text_focused_button.del_char() ,
-            "lettres" : [KEY_ONE,KEY_TWO,KEY_THREE,KEY_FOUR,KEY_FIVE,KEY_SIX,KEY_SEVEN,KEY_EIGHT,KEY_NINE, KEY_ZERO, KEY_ANS, KEY_DOT, KEY_SHIFT, KEY_PLUS, KEY_DIVISION, KEY_MINUS, KEY_MULTIPLICATION]
+            "lettres" : [KEY_ONE,KEY_TWO,KEY_THREE,KEY_FOUR,KEY_FIVE,KEY_SIX,KEY_SEVEN,KEY_EIGHT,KEY_NINE, KEY_ZERO, KEY_ANS, KEY_DOT, KEY_SHIFT, KEY_PLUS, KEY_DIVISION, KEY_MINUS, KEY_MULTIPLICATION,KEY_SQRT, KEY_COSINE]
         }
 
         self.action_rate_constant = 0.15
@@ -669,11 +653,7 @@ class class_interface() :
         self.grid_focused.draw()
         while True :
         ### LE DEBUG FAIT TOUT BEUGUER C NORMAL ###
-            if keydown(KEY_PI) :# Touche P sur le clavier 
-                # DEBUG ACTIONS
-                change_grid(self.menu)
-                time.sleep(self.action_rate_constant)
-        ### LE DEBUG FAIT TOUT BEUGUER C NORMAL ###
+            
                 
             self.scan_actions()                
             if self.text_mode : 
@@ -722,12 +702,6 @@ class class_interface() :
         
 
 ## COMMANDES
-
-def ajouter_type_resultat(type_resultat) : 
-    if interface.text_focused_button == None : 
-        return
-    interface.text_focused_button.ajouter_resultat(type_resultat)
-
 def ajouter_lettre(char) :
     if interface.text_focused_button == None : 
         return
@@ -741,11 +715,10 @@ def deactivate_text_mode() :
     print("Text mode deactivated")
     interface.exit_text_mode()
 
-def change_grid(grid) : 
-    interface.switch_grid(grid)
+
 
 main_list = class_liste_principale()
 main_list.focus_cell(main_list.get_cell(0,0))
-menu  = menu_secondaire()
-interface = class_interface(main_list, menu)
+
+interface = class_interface(main_list)
 interface.main_loop()
