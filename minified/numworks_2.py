@@ -28,11 +28,9 @@ class class_bouton:
 		if color is not _A:color_used=color
 		elif self.focused:color_used=self.focused_color
 		else:color_used=self.color
-		print('COLOR USED',color_used);left_top=self.coordinates[0],self.coordinates[1];fill_rect(left_top[0],left_top[1],self.width,self.height,color_used);draw_string(self.text,left_top[0],left_top[1],(0,0,0))
-	def updater_coordonnees(self):
-		if self.grid is _A:print('ERREUR',self.text,"n'est pas encore ajouté à une grille !")
-		self.grid.updater_coordonees(self)
-	def focus(self):print(self.text,'at',self.grid_coordinates,'is focused');self.focused=_D;self.draw()
+		left_top=self.coordinates[0],self.coordinates[1];fill_rect(left_top[0],left_top[1],self.width,self.height,color_used);draw_string(self.text,left_top[0],left_top[1],(0,0,0))
+	def updater_coordonnees(self):self.grid.updater_coordonees(self)
+	def focus(self):self.focused=_D;self.draw()
 	def unfocus(self):self.focused=_B;self.draw()
 	def __str__(self):return self.text+_C+str(self.grid_coordinates)
 	def changer_coordonnees(self,x=0,y=0):self.grid_coordinates[0]+=x;self.grid_coordinates[1]+=y;self.x=list(map(lambda x_orginal:x_orginal+x,self.x));self.y=list(map(lambda y_orginal:y_orginal+y,self.y));self.coordinates=_A
@@ -63,12 +61,12 @@ class boutonvaleur(class_bouton):
 class class_bouton_calcul(classtextinput):
 	def __init__(self,text,color,x,y,focused=_B,action=_A):super().__init__(text,color,x,y,focused,action);self.resultat=_A;self.type_resultat='%'
 	def draw(self):
-		A='CALC';print('Draw result with type',self.type_resultat);text=self.text
+		A='CALC';text=self.text
 		if text is _A:text=A
 		self.text=text;super().draw();result_affiche=str(self.resultat)if self.resultat!=_A else''
 		if text==A:self.text=_A
 		draw_string(result_affiche,self.coordinates[0],self.coordinates[1]+int(self.height/2),(0,0,0))
-	def exit_text_mode(self):print(self.text);self.resultat=self.evaluate(self.text);super().exit_text_mode();self.draw()
+	def exit_text_mode(self):self.resultat=self.evaluate(self.text);super().exit_text_mode();self.draw()
 	def del_char(self):
 		if len(self.text)==0 and self.type_resultat!='%':self.type_resultat='%';self.draw()
 		return super().del_char()
@@ -126,13 +124,11 @@ class class_grid:
 	def updater_coordonees(self,cell):cell.coordinates=cell.x[0]*self.cell_w+self.offset_x,cell.y[0]*self.cell_h+self.offset_y;cell.height=self.cell_h*len(cell.y);cell.width=self.cell_w*len(cell.x)
 	def get_focused_cell(self):
 		cell_content=self.__grid[self.focused[1]][self.focused[0]]
-		if cell_content is _A:print('Cell',{self.focused},'is empty');print(self.__grid);return
+		if cell_content is _A:return
 		return cell_content
 	def focus_cell(self,cell):
 		if cell is _A:0
-		button_to_unfocus=self.get_cell(self.focused[0],self.focused[1])
-		if button_to_unfocus is _A:print('UNFOCUSING EMPTY CELL')
-		button_to_unfocus.unfocus();cell.focus();self.focused=[cell.grid_coordinates[0],cell.grid_coordinates[1]]
+		button_to_unfocus=self.get_cell(self.focused[0],self.focused[1]);button_to_unfocus.unfocus();cell.focus();self.focused=[cell.grid_coordinates[0],cell.grid_coordinates[1]]
 	def __getitem__(self,index):return self.__grid[index]
 	def __setitem__(self,index,value):self.__grid[index]=value
 	def travel_x(self,i):
@@ -149,13 +145,13 @@ class class_grid:
 		if i==1:
 			for list in self.__grid[y+1:]:
 				if list[x]is not _A:self.focus_cell(list[x]);return
-			print(self.__grid);return
+			return
 		if i==-1:
 			for list in self.__grid[:y][::-1]:
 				if list[x]is not _A:self.focus_cell(list[x]);return
-			print('EDGE');return
+			return
 	def add_button(self,button):
-		print('ADD TO GRID',button.text);x,y=button.grid_coordinates
+		x,y=button.grid_coordinates
 		if self.affichable(button):
 			self.__grid[button.grid_coordinates[1]][button.grid_coordinates[0]]=button
 			for i in button.x:
@@ -196,27 +192,26 @@ class class_liste_principale(class_grid):
 	def go_down(self):
 		self.get_focused_cell().unfocus()
 		for i in self.rows[::-1]:self.move_down(i[0]);self.move_down(i[1])
-		x,y=self.focused;print(x,y);self.focus_cell(self[y][x])
+		x,y=self.focused;self.focus_cell(self[y][x])
 	def go_up(self):
 		self.get_focused_cell().unfocus()
 		for i in self.rows:self.move_up(i[0]);self.move_up(i[1])
-		x,y=self.focused;print(x,y);self.focus_cell(self[y][x])
+		x,y=self.focused;self.focus_cell(self[y][x])
 	def append_list(self):
-		print('APPEND LIST')
 		if len(self.rows)==0:y_pos=0
 		else:y_pos=self.rows[-1][0].grid_coordinates[1]+1
-		if len(self.ids)==0:print('Plus de lettres');return
+		if len(self.ids)==0:return
 		bouton_calcul=class_bouton_calcul(_A,black,[1,2,3,4,5],[y_pos]);bouton_valeur=boutonvaleur(self.remaining_ids.pop(0)+' = ',white,[0],[y_pos]);self.add_button(bouton_calcul);self.add_button(bouton_valeur);self.rows.append((bouton_valeur,bouton_calcul))
 	def travel_y(self,i):
 		y=self.focused[1]
-		if y==0 and i==-1 and self.rows[0][0].grid_coordinates[1]!=0:print('GO DOWN');self.go_down()
+		if y==0 and i==-1 and self.rows[0][0].grid_coordinates[1]!=0:self.go_down()
 		elif y==self.y_div-1 and i==1:
 			if self.rows[-1][0].grid_coordinates[1]==self.y_div-1:self.append_list()
-			print('GO UP');self.go_up()
+			self.go_up()
 		else:super().travel_y(i)
 	def get_result_by_id(self,id):
 		if type(id)!=str or len(id)==0 or len(id)>2:return Erreur(str(id)+' invalide id')
-		print(self.ids);index=self.ids.index(id[0])
+		index=self.ids.index(id[0])
 		if len(id)>1:
 			try:index+=26*int(id[1])-1
 			except:return Erreur('id invalide')
@@ -252,8 +247,8 @@ class class_interface:
 def ajouter_lettre(char):
 	if interface.text_focused_button==_A:return
 	interface.text_focused_button.add_char(char)
-def activate_text_mode():print('Text mode activated');interface.enter_text_mode()
-def deactivate_text_mode():print('Text mode deactivated');interface.exit_text_mode()
+def activate_text_mode():interface.enter_text_mode()
+def deactivate_text_mode():interface.exit_text_mode()
 main_list=class_liste_principale()
 main_list.focus_cell(main_list.get_cell(0,0))
 interface=class_interface(main_list)

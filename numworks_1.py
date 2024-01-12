@@ -82,18 +82,14 @@ class class_bouton :
             color_used = self.focused_color
         else :
             color_used = self.color
-        print("COLOR USED", color_used)
         left_top = (self.coordinates[0], self.coordinates[1]) 
         fill_rect(left_top[0], left_top[1], self.width, self.height, color_used)
         draw_string(self.text, left_top[0], left_top[1], (0, 0, 0))
     
     def updater_coordonnees(self) :
-        if self.grid is None :
-            print("ERREUR", self.text, "n'est pas encore ajouté à une grille !")
         self.grid.updater_coordonees(self)
     
     def focus(self) :
-        print(self.text,"at" ,self.grid_coordinates, "is focused")
         self.focused = True
         self.draw()
     
@@ -193,7 +189,6 @@ class class_bouton_calcul(classtextinput) :
         self.type_resultat = "%"  # Ca pourrait etre : "IFT[%]" ou "NFT[%]"
         
     def draw(self) :
-        print("Draw result with type", self.type_resultat)
         text = self.text
         if text is None : text = "CALC"
         self.text = text
@@ -203,7 +198,6 @@ class class_bouton_calcul(classtextinput) :
         draw_string(result_affiche, self.coordinates[0], self.coordinates[1] + int(self.height/2), (0, 0, 0))
     
     def exit_text_mode(self):
-        print(self.text)
         self.resultat = self.evaluate(self.text)
         super().exit_text_mode()
         self.draw()  # Oui, risque de redraw alors qu'on a déja draw parce que texte vide. A voir comment ca se fix
@@ -396,8 +390,6 @@ class class_grid:
         """
         cell_content = self.__grid[self.focused[1]][self.focused[0]]
         if cell_content is None : 
-            print("Cell",{self.focused},"is empty")
-            print(self.__grid)
             return None
         return cell_content
     
@@ -407,8 +399,6 @@ class class_grid:
             #raise Exception(f"Can't focus an empty cell at {cell}")
         
         button_to_unfocus = self.get_cell(self.focused[0],self.focused[1])
-        if button_to_unfocus is  None : 
-            print("UNFOCUSING EMPTY CELL")
         
         button_to_unfocus.unfocus()
         cell.focus()
@@ -450,18 +440,15 @@ class class_grid:
                 if list[x] is not None :
                     self.focus_cell(list[x])
                     return
-            print(self.__grid)
             return
         if i == -1 : # Go UP
             for list in self.__grid[:y][::-1] : # On part notre cell et on va vers le haut et focus le premier bouton. 
                 if list[x] is not None : 
                     self.focus_cell(list[x])
                     return
-            print("EDGE")
             return
         
     def add_button(self, button : class_bouton) :
-        print("ADD TO GRID", button.text)
         x, y = button.grid_coordinates
     
         if self.affichable(button) :
@@ -549,7 +536,6 @@ class class_liste_principale(class_grid) :
             self.move_down(i[0])
             self.move_down(i[1])
         x, y = self.focused
-        print(x, y)
         self.focus_cell(self[y][x])
 
     def go_up(self) : 
@@ -561,18 +547,15 @@ class class_liste_principale(class_grid) :
             self.move_up(i[0])
             self.move_up(i[1])
         x, y = self.focused
-        print(x, y)
         self.focus_cell(self[y][x])
         
         
     def append_list(self) : 
-        print("APPEND LIST")
         if len(self.rows) == 0 :
             y_pos = 0
         else : 
             y_pos = self.rows[-1][0].grid_coordinates[1] + 1 # A la hauteur 1 en dessous du dernier bouton
         if len(self.ids) == 0 :
-            print("Plus de lettres")
             return
         bouton_calcul = class_bouton_calcul(None, black, [1, 2, 3, 4, 5], [y_pos])
         bouton_valeur = boutonvaleur(self.remaining_ids.pop(0) + " = ", white,[0], [y_pos])
@@ -583,15 +566,12 @@ class class_liste_principale(class_grid) :
     def travel_y(self, i): # OVERWRITE LA FONCTION ORIGINALE
         y = self.focused[1]
         if y == 0 and i == -1 and self.rows[0][0].grid_coordinates[1] != 0:  # On est en haut et on veut monter et il y a des boutons au dessus
-            print("GO DOWN")
             self.go_down()
         elif y == self.y_div -1  and i == 1 : # On est en bas et on veut aller vers le bas :
             if self.rows[-1][0].grid_coordinates[1] == self.y_div - 1: # On a plus de rows apres ca 
                 self.append_list()
-            print("GO UP") 
             self.go_up()
         else : 
-            #print(y, self.y_div -1)
             super().travel_y(i)
 
 
@@ -604,7 +584,6 @@ class class_liste_principale(class_grid) :
         if type(id) != str or len(id) == 0 or len(id) > 2:
             return Erreur(str(id) + " invalide id")
 
-        print(self.ids)
         index = self.ids.index(id[0]) 
         if len(id) > 1 :
             try : 
@@ -707,11 +686,9 @@ def ajouter_lettre(char) :
     interface.text_focused_button.add_char(char)
 
 def activate_text_mode() : 
-    print("Text mode activated")
     interface.enter_text_mode()
 
 def deactivate_text_mode() : 
-    print("Text mode deactivated")
     interface.exit_text_mode()
 
 
